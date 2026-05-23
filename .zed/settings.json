@@ -3,7 +3,7 @@
 // For a full list of overridable settings, and general information on folder-specific settings,
 // see the documentation: https://zed.dev/docs/configuring-zed#settings-files
 {
-  "language_servers": ["!vtsls", "..."],
+  "language_servers": ["!vtsls", "typescript-language-server", "..."],
   "lsp": {
     "oxlint": {
       "initialization_options": {
@@ -25,6 +25,22 @@
     }
   },
   "languages": {
+    "CSS": {
+      "format_on_save": "on",
+      "prettier": {
+        "allowed": false
+      },
+      "formatter": [
+        {
+          "language_server": {
+            "name": "oxfmt"
+          }
+        }
+      ],
+      "code_actions_on_format": {
+        "source.fixAll.oxc": true
+      }
+    },
     "JavaScript": {
       "format_on_save": "on",
       "prettier": {

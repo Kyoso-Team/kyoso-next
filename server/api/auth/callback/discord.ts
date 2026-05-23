@@ -4,7 +4,7 @@ import { db } from "~~/server/database/client";
 import { discordUsers } from "~~/server/database/schema";
 import { defineProtectedEventHandler } from "~~/server/utils/handlers/auth.handler";
 import { redisStateKey } from "~~/server/utils/oauth";
-import { oauthCallbackQuerySchema } from "~~/server/utils/schemas";
+import { oauthCallbackQuerySchema } from "~~/server/utils/validation/common";
 
 export default defineProtectedEventHandler(async (event, { session }) => {
   if (session.user.discord) {

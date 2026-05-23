@@ -4,5 +4,7 @@ import Header from "~/components/Header.vue";
 
 <template>
   <Header />
-  <slot />
+  <div class="flex-1 overflow-hidden">
+    <slot />
+  </div>
 </template>

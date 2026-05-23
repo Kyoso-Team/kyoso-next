@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { data: session } = await useSession();
+</script>
 
 <template>
   <main class="relative h-128">
@@ -20,7 +22,7 @@
         A web application for hosting osu! tournaments in a professional manner, regardless of scale
         or complexity.
       </p>
-      <Button size="lg" disabled>Coming soon</Button>
+      <NuxtLink to="/dashboard"><Button size="lg">Go to dashboard</Button></NuxtLink>
     </div>
   </main>
 </template>

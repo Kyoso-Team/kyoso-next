@@ -27,7 +27,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div>
+  <div class="flex h-dvh flex-col">
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />

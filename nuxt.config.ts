@@ -6,6 +6,11 @@ export default defineNuxtConfig({
   nitro: {
     preset: "bun",
   },
+  routeRules: {
+    "[slug]/**": {
+      appLayout: "tournament",
+    },
+  },
   modules: ["@nuxt/fonts", "shadcn-nuxt", "@nuxtjs/color-mode", "evlog/nuxt", "@nuxt/icon"],
   evlog: {
     env: {

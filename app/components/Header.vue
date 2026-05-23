@@ -6,7 +6,7 @@ const { data: session } = await useSession();
 
 <template>
   <Popover>
-    <header class="bg-card flex h-14.5 items-center justify-between px-4">
+    <header class="bg-card flex h-14.5 items-center justify-between border-b-2 px-4">
       <NuxtLink to="/" class="duration-150 hover:opacity-75">
         <KyosoLogo />
       </NuxtLink>

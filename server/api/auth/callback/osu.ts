@@ -6,7 +6,7 @@ import { db } from "~~/server/database/client";
 import { countries, users } from "~~/server/database/schema";
 import { pick } from "~~/server/utils/database";
 import { redisStateKey } from "~~/server/utils/oauth";
-import { oauthCallbackQuerySchema } from "~~/server/utils/schemas";
+import { oauthCallbackQuerySchema } from "~~/server/utils/validation/common";
 import { COOKIE_NAME } from "~~/shared/constants";
 
 export default defineEventHandler(async (event) => {
