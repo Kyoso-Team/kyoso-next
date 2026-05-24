@@ -69,19 +69,14 @@ const viewMode = ref<"grid" | "list">("grid");
               : 'flex flex-col gap-0.5'
           "
         >
-          <template v-if="viewMode === 'grid'">
-            <DashboardTournamentCard
-              v-for="tournament in tournaments"
-              :key="tournament.id"
-              :tournament="tournament"
-            />
-          </template>
-          <DashboardTournamentListItem
-            v-else
+          <NuxtLink
             v-for="tournament in tournaments"
             :key="tournament.id"
-            :tournament="tournament"
-          />
+            :to="`/${tournament.slug}/manage`"
+          >
+            <DashboardTournamentCard v-if="viewMode === 'grid'" :tournament="tournament" />
+            <DashboardTournamentListItem v-else :tournament="tournament" />
+          </NuxtLink>
         </CardContent>
       </Card>
     </div>

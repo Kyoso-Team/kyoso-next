@@ -138,7 +138,7 @@ watch(
             @input="field.handleChange($event.target.value)"
           />
           <FieldLegend variant="label" class="text-xs!">
-            Example URL: http://localhost:5173/t/{{
+            Example URL: http://localhost:5173/{{
               field.state.value.length !== 0 ? field.state.value : "[slug]"
             }}
           </FieldLegend>

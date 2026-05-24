@@ -6,8 +6,11 @@ export default defineNuxtConfig({
   nitro: {
     preset: "bun",
   },
+  experimental: {
+    typedPages: true,
+  },
   routeRules: {
-    "[slug]/**": {
+    "/:slug/manage/**": {
       appLayout: "tournament",
     },
   },

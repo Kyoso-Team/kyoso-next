@@ -1,8 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { PopoverContentProps } from "reka-ui";
+
+const { side = "bottom" } = defineProps<{
+  side?: PopoverContentProps["side"];
+}>();
+</script>
 
 <template>
   <PopoverContent
     align="end"
+    :side="side"
+    :sideOffset="15"
     class="flex w-60 flex-col items-center justify-center border-none p-1.25"
   >
     <Button type="button" variant="ghost" class="w-full justify-start">Profile</Button>
