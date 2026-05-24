@@ -1,6 +1,4 @@
-<script setup lang="ts">
-const { data: session } = await useSession();
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <main class="relative h-128">

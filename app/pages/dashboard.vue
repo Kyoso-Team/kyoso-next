@@ -12,11 +12,9 @@ export type Tournament = {
   banner: AssetMetadata | null;
 };
 
-const {
-  data: tournaments,
-  status,
-  refresh,
-} = await useFetch("/api/tournaments/list", {
+const isModalOpen = ref(false);
+
+const { data: tournaments, refresh } = await useFetch("/api/tournaments/list", {
   key: "tournaments",
 });
 
@@ -26,23 +24,16 @@ const createTournament = async (values: InferOutput<typeof createTournamentSchem
     body: values,
   });
 
+  isModalOpen.value = false;
+
   await refresh();
 };
-
-// const tournaments = useState<Tournament[]>("tournaments", () =>
-//   Array.from({ length: 20 }).map((_, i) => ({
-//     id: i + 1,
-//     name: `Dwxekki's International Hoshiyomis Brawl`,
-//     slug: `tournament-${i + 1}`,
-//     banner: null,
-//   })),
-// );
 
 const viewMode = ref<"grid" | "list">("grid");
 </script>
 
 <template>
-  <Dialog>
+  <Dialog v-model:open="isModalOpen">
     <div class="flex h-full flex-col px-5 py-4">
       <Card class="flex-1 overflow-hidden pt-0">
         <CardHeader class="flex items-center justify-between border-b-2 py-2">
