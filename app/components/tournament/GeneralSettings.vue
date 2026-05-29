@@ -309,7 +309,6 @@ const revertToDefault = () => {
               <Field :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name">Eligible Badge Year</FieldLabel>
                 <Input
-                  required
                   type="number"
                   :disabled="!isBws"
                   :id="field.name"
@@ -337,6 +336,7 @@ const revertToDefault = () => {
                 <Input
                   required
                   type="number"
+                  step="any"
                   :disabled="!isBws"
                   :id="field.name"
                   :name="field.name"
@@ -360,6 +360,7 @@ const revertToDefault = () => {
                 <Input
                   required
                   type="number"
+                  step="any"
                   :disabled="!isBws"
                   :id="field.name"
                   :name="field.name"
@@ -383,6 +384,7 @@ const revertToDefault = () => {
                 <Input
                   required
                   type="number"
+                  step="any"
                   :disabled="!isBws"
                   :id="field.name"
                   :name="field.name"

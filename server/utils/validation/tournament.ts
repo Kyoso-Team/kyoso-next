@@ -12,7 +12,7 @@ export const bwsSettingsSchema = v.pipe(
      */
     type: v.picklist(["linear", "quadratic"]),
     /** BWS formula will only count badges from that year onwards */
-    year: v.nullable(v.pipe(v.number(), v.minValue(2000), v.maxValue(2100))),
+    year: v.nullish(v.pipe(v.number(), v.minValue(2000), v.maxValue(2100))),
   }),
   v.check((input) => {
     if (input.type === "linear") {
