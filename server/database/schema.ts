@@ -9,7 +9,7 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import type { BWSValues } from "~~/server/utils/validation/tournament";
+import type { BWSSettings } from "~~/server/utils/validation/tournament";
 
 export type AssetMetadata = {
   fileId: string;
@@ -110,7 +110,13 @@ export const tournaments = snakeCase.table(
     lowerRankLimit: t.integer(),
     upperRankLimit: t.integer(),
     /** If null, then the tournament doesn't use BWS */
-    bwsValues: t.jsonb().$type<BWSValues>(),
+    bwsSettings: t.jsonb().$type<BWSSettings | null>().default({
+      x: 0.9937,
+      y: 2,
+      z: 1,
+      type: "linear",
+      year: null,
+    }),
     hostUserId: t
       .integer()
       .notNull()

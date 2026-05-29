@@ -33,6 +33,7 @@
     "evlog": "^2.17.0",
     "lucide-vue-next": "^1.0.0",
     "nuxt": "^4.4.5",
+    "ohash": "^2.0.11",
     "osu-api-v2-js": "^3.0.3",
     "postgres": "^3.4.9",
     "reka-ui": "^2.9.8",
@@ -40,7 +41,8 @@
     "tailwind-merge": "^3.6.0",
     "valibot": "^1.4.0",
     "vue": "^3.5.34",
-    "vue-router": "^5.0.6"
+    "vue-router": "^5.0.6",
+    "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.6.1",

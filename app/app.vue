@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import "vue-sonner/style.css";
+
 useHead({
   link: [
     {
@@ -32,6 +34,7 @@ useSeoMeta({
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    <Toaster richColors position="bottom-right" class="pointer-events-auto" />
   </div>
 </template>
 

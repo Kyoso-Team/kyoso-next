@@ -16,11 +16,11 @@ export default defineProtectedEventHandler(async (_, { session }) => {
     .leftJoin(
       tournamentAccess,
       and(
-        eq(tournaments.id, tournamentAccess.tournamentId),
-        or(
-          eq(tournamentAccess.userId, session.user.osu.osuId),
-          eq(tournaments.hostUserId, session.user.id),
-        ),
+        eq(tournamentAccess.tournamentId, tournaments.id),
+        eq(tournamentAccess.userId, session.user.id),
       ),
+    )
+    .where(
+      or(eq(tournaments.hostUserId, session.user.id), eq(tournamentAccess.userId, session.user.id)),
     );
 });

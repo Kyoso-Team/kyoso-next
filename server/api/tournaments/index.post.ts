@@ -8,6 +8,13 @@ export default defineProtectedEventHandler(async (event, { session }) => {
 
   return db.insert(tournaments).values({
     ...body,
+    bwsSettings: {
+      x: 0.9937,
+      y: 2,
+      z: 1,
+      type: "linear",
+      year: null,
+    },
     hostUserId: session.user.id,
   });
 });
