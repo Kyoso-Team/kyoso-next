@@ -1,9 +1,9 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { API } from "osu-api-v2-js";
 import { isProduction } from "std-env";
 import * as v from "valibot";
 import { db } from "~~/server/database/client";
-import { badges, countries, users } from "~~/server/database/schema";
+import { badges, countries, users, userAwardedBadges } from "~~/server/database/schema";
 import { pick } from "~~/server/utils/database";
 import { redisStateKey } from "~~/server/utils/oauth";
 import { oauthCallbackQuerySchema } from "~~/server/utils/validation/common";
@@ -42,15 +42,7 @@ export default defineEventHandler(async (event) => {
     code,
   );
 
-  const {
-    username,
-    id: osuId,
-    is_bot,
-    is_deleted,
-    is_restricted,
-    badges: user_badges,
-    country,
-  } = await client.getResourceOwner().catch((e) => {
+  const osuUser = await client.getResourceOwner().catch((e) => {
     console.error(e);
     throw createError({
       status: 401,
@@ -58,7 +50,7 @@ export default defineEventHandler(async (event) => {
     });
   });
 
-  if (is_bot || is_deleted || is_restricted) {
+  if (osuUser.is_bot || osuUser.is_deleted || osuUser.is_restricted) {
     throw createError({
       status: 401,
     });
@@ -67,10 +59,10 @@ export default defineEventHandler(async (event) => {
   const existingUser = await db
     .update(users)
     .set({
-      username,
-      countryCode: country.code,
+      username: osuUser.username,
+      countryCode: osuUser.country_code,
     })
-    .where(eq(users.osuId, osuId))
+    .where(eq(users.osuId, osuUser.id))
     .returning({
       exists: sql<boolean>`1`.as("exists"),
     })
@@ -87,7 +79,7 @@ export default defineEventHandler(async (event) => {
         }),
       })
       .from(users)
-      .where(eq(users.osuId, osuId))
+      .where(eq(users.osuId, osuUser.id))
       .limit(1)
       // since we checked that user exists, we know that record will be there no matter what
       .then((user) => user[0]!);
@@ -110,10 +102,15 @@ export default defineEventHandler(async (event) => {
     const newCountry = await tx
       .insert(countries)
       .values({
-        code: country.code,
-        name: country.name,
+        code: osuUser.country.code,
+        name: osuUser.country.name,
       })
-      .onConflictDoNothing()
+      .onConflictDoUpdate({
+        target: countries.code,
+        set: {
+          name: osuUser.country.name,
+        },
+      })
       .returning(
         pick(countries, {
           code: true,
@@ -124,15 +121,15 @@ export default defineEventHandler(async (event) => {
     const newUser = await tx
       .insert(users)
       .values({
-        osuId,
-        username,
+        osuId: osuUser.id,
+        username: osuUser.username,
         countryCode: newCountry.code,
-        isAdmin: Number(runtimeConfig.ownerOsuUserId) === osuId,
+        isAdmin: Number(runtimeConfig.ownerOsuUserId) === osuUser.id,
       })
       .returning(pick(users, { id: true }))
       .then((result) => result[0]!);
 
-    const badgesToInsert = user_badges.map<typeof badges.$inferInsert>((badge) => {
+    const badgesToInsert = osuUser.badges.map<typeof badges.$inferInsert>((badge) => {
       return {
         imgFileName: badge.image_url.split("/").at(-1) ?? "",
         description: badge.description,
@@ -144,13 +141,32 @@ export default defineEventHandler(async (event) => {
       await tx.insert(badges).values(badgesToInsert).onConflictDoNothing();
     }
 
-    // const awardedBadges: (typeof .$inferInsert)[] = user.badges.map((badge) => ({
-    //   awardedAt: new Date(badge.awarded_at),
-    //   osuBadgeId: dbBadges.find(
-    //     ({ imgFileName }) => (badge.image_url.split('/').at(-1) || '') === imgFileName
-    //   )!.id,
-    //   osuUserId: user?.id || 0
-    // }));
+    const dbBadges =
+      badgesToInsert.length > 0
+        ? await tx
+            .select(pick(badges, { id: true, imgFileName: true }))
+            .from(badges)
+            .where(
+              inArray(
+                badges.imgFileName,
+                badgesToInsert.map((b) => b.imgFileName),
+              ),
+            )
+        : [];
+
+    const awardedBadges: (typeof userAwardedBadges.$inferInsert)[] = osuUser.badges.map(
+      (badge) => ({
+        awardedAt: new Date(badge.awarded_at),
+        badgeId: dbBadges.find(
+          ({ imgFileName }) => (badge.image_url.split("/").at(-1) || "") === imgFileName,
+        )!.id,
+        osuId: newUser.id,
+      }),
+    );
+
+    if (awardedBadges.length > 0) {
+      await tx.insert(userAwardedBadges).values(awardedBadges).onConflictDoNothing();
+    }
 
     return newUser;
   });
