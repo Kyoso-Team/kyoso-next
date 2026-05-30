@@ -60,6 +60,7 @@ export const badges = snakeCase.table(
     imgFileName: t.varchar().notNull(),
     description: t.text(),
     tournamentUrl: t.text(),
+    isBwsEligible: t.boolean().notNull(),
   }),
   (table) => [uniqueIndex().on(table.imgFileName)],
 );

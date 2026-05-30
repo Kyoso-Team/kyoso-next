@@ -29,7 +29,7 @@ const items = [
   {
     href: `/${route.params.slug}/manage/assets`,
     label: "Assets",
-    icon: "fa7-regular:images",
+    icon: "fa7-solid:images",
   },
 ];
 
@@ -99,7 +99,7 @@ const isSettingsPage = computed(() => route.path.includes("/general"));
         </Sidebar>
       </Popover>
       <SidebarInset class="h-svh p-2">
-        <Card class="flex h-full">
+        <Card class="flex h-full overflow-auto">
           <CardContent class="w-full max-w-5xl">
             <slot />
           </CardContent>

@@ -134,6 +134,10 @@ export default defineEventHandler(async (event) => {
         imgFileName: badge.image_url.split("/").at(-1) ?? "",
         description: badge.description,
         tournamentUrl: badge.url,
+        isBwsEligible: !isNonTournamentBadge({
+          description: badge.description,
+          imgFileName: badge.image_url.split("/").at(-1) ?? "",
+        }),
       };
     });
 
