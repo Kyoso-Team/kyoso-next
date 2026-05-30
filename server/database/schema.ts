@@ -52,6 +52,34 @@ export const users = snakeCase.table("user", (t) => ({
   ...timestampColumns(),
 }));
 
+export const badges = snakeCase.table(
+  "badge",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    /** Example: In URL `https://assets.ppy.sh/profile-badges/owc2023-winner.png`, `owc2023-winner.png` is the file name */
+    imgFileName: t.varchar().notNull(),
+    description: t.text(),
+    tournamentUrl: t.text(),
+  }),
+  (table) => [uniqueIndex().on(table.imgFileName)],
+);
+
+export const userAwardedBadges = snakeCase.table(
+  "user_badge",
+  (t) => ({
+    osuId: t
+      .integer()
+      .notNull()
+      .references(() => users.id),
+    badgeId: t
+      .integer()
+      .notNull()
+      .references(() => badges.id),
+    awardedAt: timestamp("awarded_at", timestampConfig).notNull(),
+  }),
+  (t) => [primaryKey({ columns: [t.osuId, t.badgeId] }), index().on(t.osuId)],
+);
+
 export const sessions = snakeCase.table("session", (table) => ({
   id: table.text().primaryKey(),
   userId: table

@@ -3,7 +3,7 @@ import { API } from "osu-api-v2-js";
 import { isProduction } from "std-env";
 import * as v from "valibot";
 import { db } from "~~/server/database/client";
-import { countries, users } from "~~/server/database/schema";
+import { badges, countries, users } from "~~/server/database/schema";
 import { pick } from "~~/server/utils/database";
 import { redisStateKey } from "~~/server/utils/oauth";
 import { oauthCallbackQuerySchema } from "~~/server/utils/validation/common";
@@ -48,6 +48,7 @@ export default defineEventHandler(async (event) => {
     is_bot,
     is_deleted,
     is_restricted,
+    badges: user_badges,
     country,
   } = await client.getResourceOwner().catch((e) => {
     console.error(e);
@@ -120,7 +121,7 @@ export default defineEventHandler(async (event) => {
       )
       .then((result) => result[0]!);
 
-    return await tx
+    const newUser = await tx
       .insert(users)
       .values({
         osuId,
@@ -130,6 +131,28 @@ export default defineEventHandler(async (event) => {
       })
       .returning(pick(users, { id: true }))
       .then((result) => result[0]!);
+
+    const badgesToInsert = user_badges.map<typeof badges.$inferInsert>((badge) => {
+      return {
+        imgFileName: badge.image_url.split("/").at(-1) ?? "",
+        description: badge.description,
+        tournamentUrl: badge.url,
+      };
+    });
+
+    if (badgesToInsert.length > 0) {
+      await tx.insert(badges).values(badgesToInsert).onConflictDoNothing();
+    }
+
+    // const awardedBadges: (typeof .$inferInsert)[] = user.badges.map((badge) => ({
+    //   awardedAt: new Date(badge.awarded_at),
+    //   osuBadgeId: dbBadges.find(
+    //     ({ imgFileName }) => (badge.image_url.split('/').at(-1) || '') === imgFileName
+    //   )!.id,
+    //   osuUserId: user?.id || 0
+    // }));
+
+    return newUser;
   });
 
   const session = await createSession({
