@@ -1,17 +1,17 @@
 <script setup lang="ts">
-const route = useRoute("slug-manage");
+const route = useRoute("tournaments-slug-settings");
 
 const settingsItems = [
   {
-    href: `/${route.params.slug}/manage/general`,
+    href: `/tournaments/${route.params.slug}/settings`,
     label: "General",
   },
   {
-    href: `/${route.params.slug}/manage/general/players`,
+    href: `/tournaments/${route.params.slug}/settings/players`,
     label: "Players",
   },
   {
-    href: `/${route.params.slug}/manage/general/stages`,
+    href: `/tournaments/${route.params.slug}/settings/stages`,
     label: "Stages",
   },
 ];

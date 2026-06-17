@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     typedPages: true,
   },
   routeRules: {
-    "/:slug/manage/**": {
+    "/tournaments/:slug/**": {
       appLayout: "tournament",
     },
   },

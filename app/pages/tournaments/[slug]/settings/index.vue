@@ -2,7 +2,7 @@
 import { toast } from "vue-sonner";
 import type { UpdateTournament } from "~~/shared/validation/tournaments";
 
-const route = useRoute("slug-manage");
+const route = useRoute("tournaments-slug-settings");
 const { data: tournament, refresh } = await useTournament(route.params.slug);
 
 const updateTournament = async (values: UpdateTournament) => {

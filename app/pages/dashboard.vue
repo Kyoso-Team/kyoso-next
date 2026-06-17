@@ -72,7 +72,7 @@ const viewMode = ref<"grid" | "list">("grid");
           <NuxtLink
             v-for="tournament in tournaments"
             :key="tournament.id"
-            :to="{ name: 'slug-manage', params: { slug: tournament.slug } }"
+            :to="{ name: 'tournaments-slug', params: { slug: tournament.slug } }"
           >
             <DashboardTournamentCard v-if="viewMode === 'grid'" :tournament="tournament" />
             <DashboardTournamentListItem v-else :tournament="tournament" />

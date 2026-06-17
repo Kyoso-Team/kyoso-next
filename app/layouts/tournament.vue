@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import ProfileMenu from "~/components/ProfileMenu.vue";
+import { SidebarGroup } from "~/components/ui/sidebar";
 import { buildUrl } from "~/lib/utils";
 
-const route = useRoute("slug-manage");
+const route = useRoute("tournaments-slug");
 
 const { data: session } = await useSession();
 
@@ -17,23 +18,18 @@ if (tournamentError.value) {
 
 const items = [
   {
-    href: `/${route.params.slug}/manage`,
-    label: "Home",
-    icon: "fa7-solid:house",
-  },
-  {
-    href: `/${route.params.slug}/manage/general`,
+    href: `/tournaments/${route.params.slug}/settings`,
     label: "Settings",
     icon: "fa7-solid:cog",
   },
   {
-    href: `/${route.params.slug}/manage/assets`,
+    href: `/tournaments/${route.params.slug}/assets`,
     label: "Assets",
     icon: "fa7-solid:images",
   },
 ];
 
-const isSettingsPage = computed(() => route.path.includes("/general"));
+const isSettingsPage = computed(() => route.path.includes("/settings"));
 </script>
 
 <template>
@@ -57,8 +53,22 @@ const isSettingsPage = computed(() => route.path.includes("/general"));
               isSettingsPage ? 'rounded-tr-none rounded-br-none' : '',
             ]"
           >
-            <SidebarHeader> </SidebarHeader>
             <SidebarContent>
+              <SidebarGroup>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton size="sm" as-child tooltip="Home">
+                      <NuxtLink
+                        :href="{ name: 'tournaments-slug', params: { slug: route.params.slug } }"
+                      >
+                        <Icon name="fa7-solid:house" size="18" class="shrink-0" />
+                        <span>Home</span>
+                      </NuxtLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroup>
+              <SidebarSeparator />
               <SidebarGroup>
                 <SidebarMenu>
                   <SidebarMenuItem v-for="item in items" :key="item.href">
