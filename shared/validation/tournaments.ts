@@ -134,5 +134,7 @@ export type UpdateTournamentApi = v.InferOutput<typeof updateTournamentApiSchema
 
 export const selectTournamentSchema = createSelectSchema(tournaments, {
   bwsSettings: v.nullable(bwsSettingsSchema),
+  banner: v.nullable(v.pipe(v.string(), v.url())),
+  logo: v.nullable(v.pipe(v.string(), v.url())),
 });
 export type Tournament = v.InferOutput<typeof selectTournamentSchema>;

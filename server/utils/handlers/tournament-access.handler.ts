@@ -12,11 +12,12 @@ type TournamentAccessEventHandler<T extends EventHandlerRequest, D> = (
   },
 ) => Promise<D>;
 
-const validateTournamentAccess = async (session: SessionPayload, slug: string) => {
+export const validateTournamentAccess = async (session: SessionPayload, slug: string) => {
   const result = await db
     .select({
       tournament: {
         ...pick(tournaments, {
+          id: true,
           slug: true,
           name: true,
           acronym: true,
@@ -26,6 +27,8 @@ const validateTournamentAccess = async (session: SessionPayload, slug: string) =
           lowerRankLimit: true,
           upperRankLimit: true,
           bwsSettings: true,
+          banner: true,
+          logo: true,
         }),
       },
       exists: sql<boolean>`exists (select 1 from ${tournaments} where ${eq(tournaments.slug, slug)})`,

@@ -3,7 +3,7 @@ import { db } from "~~/server/database/client";
 import { tournamentAccess, tournaments } from "~~/server/database/schema";
 
 export default defineProtectedEventHandler(async (_, { session }) => {
-  return await db
+  const res = await db
     .select({
       ...pick(tournaments, {
         id: true,
@@ -23,4 +23,6 @@ export default defineProtectedEventHandler(async (_, { session }) => {
     .where(
       or(eq(tournaments.hostUserId, session.user.id), eq(tournamentAccess.userId, session.user.id)),
     );
+
+  return res.map((t) => ({ ...t, banner: t.banner ? getAssetUrl(t.banner.fileId) : null }));
 });

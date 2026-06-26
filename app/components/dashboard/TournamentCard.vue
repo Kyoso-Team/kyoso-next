@@ -1,30 +1,33 @@
 <script setup lang="ts">
-import type { Tournament } from "../../pages/dashboard.vue";
+import type { ArrayElement } from "~/types/util";
+
+type A = ArrayElement<ReturnType<typeof useTournamentsList>["tournaments"]["value"]>;
+
 const { tournament } = defineProps<{
-  tournament: Tournament;
+  tournament: A;
 }>();
 
 const bannerImage = computed(() => tournament.banner ?? "/tournament-banner-thumb.jpeg");
 </script>
 
 <template>
-  <Card class="pt-0">
-    <CardHeader class="hidden"> </CardHeader>
+  <Card
+    class="group hover:border-ring/60 focus-within:border-ring focus-within:ring-ring/50 overflow-hidden pt-0 transition-all focus-within:ring-[3px] hover:shadow-md"
+  >
     <CardContent
       class="relative block aspect-21/9 min-h-20 overflow-hidden rounded-t-md bg-cover bg-center bg-no-repeat"
-      :style="{
-        backgroundImage: `url(${bannerImage})`,
-      }"
+      :style="{ backgroundImage: `url(${bannerImage})` }"
     >
       <span
         v-if="!tournament.banner"
-        class="font-violet-sans absolute inset-0 z-1 flex items-center justify-center px-4 text-center text-xl text-white select-none"
+        aria-hidden="true"
+        class="absolute inset-0 z-1 flex items-center justify-center px-4 text-center text-xl/6 font-semibold text-white select-none"
       >
         {{ tournament.name }}
       </span>
     </CardContent>
     <CardFooter>
-      <h2>{{ tournament.name }}</h2>
+      <CardTitle class="line-clamp-2 text-base">{{ tournament.name }}</CardTitle>
     </CardFooter>
   </Card>
 </template>

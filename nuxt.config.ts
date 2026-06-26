@@ -14,7 +14,14 @@ export default defineNuxtConfig({
       appLayout: "tournament",
     },
   },
-  modules: ["@nuxt/fonts", "shadcn-nuxt", "@nuxtjs/color-mode", "evlog/nuxt", "@nuxt/icon"],
+  modules: [
+    "@nuxt/fonts",
+    "shadcn-nuxt",
+    "@nuxtjs/color-mode",
+    "evlog/nuxt",
+    "@nuxt/icon",
+    "@nuxt/image",
+  ],
   evlog: {
     env: {
       service: "kyoso",
@@ -59,6 +66,13 @@ export default defineNuxtConfig({
       host: process.env.REDIS_HOST,
       password: process.env.REDIS_PASSWORD,
       port: +process.env.REDIS_PORT!,
+    },
+    s3: {
+      accessKey: process.env.S3_ACCESS_KEY,
+      secretKey: process.env.S3_SECRET_KEY,
+      endpointUrl: process.env.S3_ENDPOINT_URL,
+      assetUrl: process.env.S3_ASSET_URL,
+      region: process.env.S3_REGION,
     },
   },
   shadcn: {

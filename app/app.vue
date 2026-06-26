@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import "vue-sonner/style.css";
 
+const { modal, setModal } = useModal();
+
 useHead({
   link: [
     {
@@ -34,6 +36,12 @@ useSeoMeta({
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+
+    <Dialog :open="modal !== null" @update:open="(v) => !v && setModal(null)">
+      <DialogScrollContent>
+        <component v-if="modal" :is="modal" />
+      </DialogScrollContent>
+    </Dialog>
     <Toaster richColors position="bottom-right" class="pointer-events-auto" />
   </div>
 </template>

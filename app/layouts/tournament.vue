@@ -72,7 +72,12 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
               <SidebarGroup>
                 <SidebarMenu>
                   <SidebarMenuItem v-for="item in items" :key="item.href">
-                    <SidebarMenuButton size="sm" as-child :tooltip="item.label">
+                    <SidebarMenuButton
+                      size="sm"
+                      as-child
+                      :tooltip="item.label"
+                      :is-active="route.path.includes(item.label.toLowerCase())"
+                    >
                       <NuxtLink :to="item.href">
                         <Icon :name="item.icon" size="18" class="shrink-0" />
                         <span>{{ item.label }}</span>
