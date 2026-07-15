@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": [],
+  "ignorePatterns": ["node_modules/**", "app/components/ui/**"],
   "sortImports": true,
   "sortTailwindcss": true
 }

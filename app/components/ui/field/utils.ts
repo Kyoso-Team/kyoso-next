@@ -1,5 +1,17 @@
-import type { AnyFieldApi } from "@tanstack/vue-form";
+import type {
+  FieldArrayStore,
+  FieldStore,
+  FormSchema,
+  RequiredPath,
+} from "@formisch/vue";
 
-export function isInvalid(field: AnyFieldApi) {
-  return field.state.meta.isTouched && !field.state.meta.isValid;
+export function isInvalid<
+  TSchema extends FormSchema,
+  TFieldPath extends RequiredPath,
+>(
+  field:
+    | FieldStore<TSchema, TFieldPath>
+    | FieldArrayStore<TSchema, TFieldPath>,
+) {
+  return field.errors && field.isEdited && !field.isValid;
 }

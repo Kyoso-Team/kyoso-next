@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import { useForm } from "@tanstack/vue-form";
+import {
+  Form,
+  Field as FormField,
+  setErrors,
+  setInput,
+  useField,
+  useForm,
+  validate,
+  type SubmitHandler,
+} from "@formisch/vue";
+import { useDebounceFn } from "@vueuse/core";
 import * as v from "valibot";
 import { createTournamentSchema } from "~~/shared/validation/tournaments";
 
@@ -13,43 +23,21 @@ const emit = defineEmits<{
   submit: [values: FormValues];
 }>();
 
-const defaultValues: v.InferInput<typeof createTournamentSchema> = {
-  name: "",
-  slug: "",
-  acronym: "",
-  type: undefined,
-  minTeamSize: undefined,
-  maxTeamSize: undefined,
-  lowerRankLimit: undefined,
-  upperRankLimit: undefined,
-};
-
 const form = useForm({
-  defaultValues,
-  validators: {
-    onChange: createTournamentSchema,
-  },
-  onSubmit: async ({ value }) => {
-    emit("submit", value as FormValues);
-  },
-  onSubmitInvalid: import.meta.env.DEV
-    ? ({ value, formApi }) => {
-        console.log(value);
-        console.log(formApi.getAllErrors());
-      }
-    : undefined,
+  schema: createTournamentSchema,
+  validate: "blur",
+  revalidate: "input",
 });
 
-const checkSlug = async (slug: string) => {
-  const slugExists = await $fetch("/api/tournaments/check-slug", {
-    query: { slug },
-  });
-  return slugExists ? "This slug is already taken" : undefined;
+const submitForm: SubmitHandler<typeof createTournamentSchema> = (values) => {
+  emit("submit", values);
 };
 
-const isTeamTournament = computed(
-  () => form.useStore((state) => state.values.type).value === "teams",
-);
+const tournamentType = useField(form, {
+  path: ["type"],
+});
+
+const isTeamTournament = computed(() => tournamentType.input === "teams");
 
 const isOpenRank = ref(false);
 
@@ -57,11 +45,11 @@ watch(
   isTeamTournament,
   (isTeam) => {
     if (!isTeam) {
-      form.setFieldValue("minTeamSize", 1, { dontValidate: true });
-      form.setFieldValue("maxTeamSize", 1, { dontValidate: true });
+      setInput(form, { path: ["minTeamSize"], input: 1 });
+      setInput(form, { path: ["maxTeamSize"], input: 1 });
     } else {
-      form.setFieldValue("minTeamSize", undefined, { dontValidate: true });
-      form.setFieldValue("maxTeamSize", undefined, { dontValidate: true });
+      setInput(form, { path: ["minTeamSize"], input: undefined });
+      setInput(form, { path: ["maxTeamSize"], input: undefined });
     }
   },
   { immediate: true },
@@ -71,90 +59,89 @@ watch(
   isOpenRank,
   (isOpenRank) => {
     if (isOpenRank) {
-      form.setFieldValue("lowerRankLimit", null, { dontValidate: true });
-      form.setFieldValue("upperRankLimit", null, { dontValidate: true });
+      setInput(form, { path: ["lowerRankLimit"], input: undefined });
+      setInput(form, { path: ["upperRankLimit"], input: undefined });
     }
   },
   { immediate: true },
 );
+
+const slug = useField(form, {
+  path: ["slug"],
+});
+
+const checkSlug = useDebounceFn(async (slug: string) => {
+  const slugExists = await $fetch("/api/tournaments/check-slug", {
+    query: { slug },
+  });
+  return slugExists ? "This slug is already taken" : undefined;
+}, 500);
+
+watchEffect(async () => {
+  if (slug.input) {
+    const error = await checkSlug(slug.input);
+    if (error) {
+      setErrors(form, { path: ["slug"], errors: [error] });
+    }
+  }
+});
 </script>
 
 <template>
-  <form :id="formId" class="space-y-3" @submit.prevent="form.handleSubmit">
+  <Form :of="form" :id="formId" class="space-y-3" @submit="submitForm">
     <FieldGroup>
-      <form.Field v-slot="{ field }" name="name">
+      <FormField :of="form" :path="['name']" v-slot="field">
         <Field :data-invalid="isInvalid(field)">
-          <FieldLabel :for="field.name">Tournament Name</FieldLabel>
+          <FieldLabel :for="field.props.name">Tournament Name</FieldLabel>
           <Input
             required
-            :id="field.name"
-            :name="field.name"
-            :model-value="field.state.value"
+            :id="field.props.name"
+            v-model="field.input"
+            v-bind="field.props"
             :aria-invalid="isInvalid(field)"
-            @blur="field.handleBlur"
-            @input="field.handleChange($event.target.value)"
           />
-          <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
         </Field>
-      </form.Field>
-      <form.Field v-slot="{ field }" name="acronym">
+      </FormField>
+      <FormField :of="form" :path="['acronym']" v-slot="field">
         <Field :data-invalid="isInvalid(field)">
-          <FieldLabel :for="field.name">Tournament Acronym</FieldLabel>
+          <FieldLabel :for="field.props.name">Tournament Acronym</FieldLabel>
           <Input
             required
-            :id="field.name"
-            :name="field.name"
-            :model-value="field.state.value"
+            :id="field.props.name"
+            v-model="field.input"
+            v-bind="field.props"
             :aria-invalid="isInvalid(field)"
-            @blur="field.handleBlur"
-            @input="field.handleChange($event.target.value)"
           />
-          <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
         </Field>
-      </form.Field>
-      <form.Field
-        v-slot="{ field }"
-        name="slug"
-        :validators="{
-          onChangeAsync: async ({ value }) => {
-            const slugExists = await checkSlug(value);
-            return slugExists ? 'This slug is already taken' : undefined;
-          },
-          onChangeAsyncDebounceMs: 500,
-        }"
-      >
+      </FormField>
+      <FormField :of="form" :path="['slug']" v-slot="field">
         <Field :data-invalid="isInvalid(field)">
-          <FieldLabel :for="field.name">URL Slug</FieldLabel>
+          <FieldLabel :for="field.props.name">URL Slug</FieldLabel>
           <FieldDescription>
             The string that will be used to navigate towards any pages related to the tournament.
           </FieldDescription>
           <Input
             required
-            :id="field.name"
-            :name="field.name"
-            :model-value="field.state.value"
+            v-model="field.input"
+            v-bind="field.props"
+            :id="field.props.name"
             :aria-invalid="isInvalid(field)"
-            @blur="field.handleBlur"
-            @input="field.handleChange($event.target.value)"
           />
           <FieldLegend variant="label" class="text-xs!">
             Example URL: http://localhost:5173/{{
-              field.state.value.length !== 0 ? field.state.value : "[slug]"
+              field.input?.length !== 0 ? field.input : "[slug]"
             }}
           </FieldLegend>
-          <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
         </Field>
-      </form.Field>
-      <form.Field v-slot="{ field }" name="type">
+      </FormField>
+      <FormField :of="form" :path="['type']" v-slot="field">
         <Field :data-invalid="isInvalid(field)">
-          <FieldLabel :for="field.name">Tournament Type</FieldLabel>
-          <Select
-            :name="field.name"
-            :model-value="field.state.value"
-            :aria-invalid="isInvalid(field)"
-            @update:model-value="(v) => field.handleChange(v as FormValues['type'])"
-          >
-            <SelectTrigger :id="field.name">
+          <FieldLabel :for="field.props.name">Tournament Type</FieldLabel>
+          <Select v-model="field.input" :aria-invalid="isInvalid(field)" v-bind="field.props">
+            <SelectTrigger :id="field.props.name">
               <SelectValue placeholder="---" />
             </SelectTrigger>
             <SelectContent>
@@ -162,12 +149,12 @@ watch(
               <SelectItem value="solo">Solo</SelectItem>
             </SelectContent>
           </Select>
-          <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
         </Field>
-      </form.Field>
+      </FormField>
     </FieldGroup>
-    <form.Field v-slot="{ field: minTeamSizeField }" name="minTeamSize">
-      <form.Field v-slot="{ field: maxTeamSizeField }" name="maxTeamSize">
+    <FormField :of="form" :path="['minTeamSize']" v-slot="minTeamSizeField">
+      <FormField :of="form" :path="['maxTeamSize']" v-slot="maxTeamSizeField">
         <div>
           <Transition
             enter-active-class="transition-all duration-200 ease-in-out"
@@ -179,51 +166,48 @@ watch(
           >
             <FieldGroup v-if="isTeamTournament" class="overflow-hidden">
               <Field :data-invalid="isInvalid(minTeamSizeField)">
-                <FieldLabel :for="minTeamSizeField.name">Min Team Size</FieldLabel>
+                <FieldLabel :for="minTeamSizeField.props.name">Min Team Size</FieldLabel>
                 <Input
                   required
                   type="number"
-                  :id="minTeamSizeField.name"
-                  :name="minTeamSizeField.name"
-                  :model-value="minTeamSizeField.state.value ?? undefined"
+                  v-bind="minTeamSizeField.props"
+                  :id="minTeamSizeField.props.name"
+                  :name="minTeamSizeField.props.name"
+                  v-model.number="minTeamSizeField.input"
                   :aria-invalid="isInvalid(minTeamSizeField)"
-                  @blur="minTeamSizeField.handleBlur"
-                  @input="minTeamSizeField.handleChange($event.target.valueAsNumber)"
                 />
                 <FieldError
                   v-if="isInvalid(minTeamSizeField)"
-                  :errors="minTeamSizeField.state.meta.errors"
+                  :errors="minTeamSizeField.errors ?? []"
                 />
               </Field>
               <Field :data-invalid="isInvalid(maxTeamSizeField)">
-                <FieldLabel :for="maxTeamSizeField.name">Max Team Size</FieldLabel>
+                <FieldLabel :for="maxTeamSizeField.props.name">Max Team Size</FieldLabel>
                 <Input
                   required
                   type="number"
-                  :id="maxTeamSizeField.name"
-                  :name="maxTeamSizeField.name"
-                  :model-value="maxTeamSizeField.state.value ?? undefined"
+                  :id="maxTeamSizeField.props.name"
+                  v-model.number="maxTeamSizeField.input"
                   :aria-invalid="isInvalid(maxTeamSizeField)"
-                  @blur="maxTeamSizeField.handleBlur"
-                  @input="maxTeamSizeField.handleChange($event.target.valueAsNumber)"
+                  v-bind="maxTeamSizeField.props"
                 />
                 <FieldError
                   v-if="isInvalid(maxTeamSizeField)"
-                  :errors="maxTeamSizeField.state.meta.errors"
+                  :errors="maxTeamSizeField.errors ?? []"
                 />
               </Field>
             </FieldGroup>
           </Transition>
         </div>
-      </form.Field>
-    </form.Field>
+      </FormField>
+    </FormField>
     <FieldGroup>
       <Field orientation="horizontal">
         <Checkbox name="checkbox" id="checkbox" class="max-w-4" v-model="isOpenRank" />
         <FieldLabel for="checkbox"> Is it open rank? </FieldLabel>
       </Field>
-      <form.Field v-slot="{ field: lowerRankLimitField }" name="lowerRankLimit">
-        <form.Field v-slot="{ field: upperRankLimitField }" name="upperRankLimit">
+      <FormField :of="form" :path="['lowerRankLimit']" v-slot="lowerRankLimitField">
+        <FormField :of="form" :path="['upperRankLimit']" v-slot="upperRankLimitField">
           <div>
             <Transition
               enter-active-class="transition-all duration-200 ease-in-out"
@@ -235,45 +219,41 @@ watch(
             >
               <FieldGroup v-if="!isOpenRank" class="overflow-hidden">
                 <Field :data-invalid="isInvalid(lowerRankLimitField)">
-                  <FieldLabel :for="lowerRankLimitField.name">Lower Rank Limit</FieldLabel>
+                  <FieldLabel :for="lowerRankLimitField.props.name">Lower Rank Limit</FieldLabel>
                   <Input
                     required
                     type="number"
-                    :id="lowerRankLimitField.name"
-                    :name="lowerRankLimitField.name"
-                    :model-value="lowerRankLimitField.state.value ?? undefined"
+                    :id="lowerRankLimitField.props.name"
+                    v-model.number="lowerRankLimitField.input"
+                    v-bind="lowerRankLimitField.props"
                     :aria-invalid="isInvalid(lowerRankLimitField)"
-                    @blur="lowerRankLimitField.handleBlur"
-                    @input="lowerRankLimitField.handleChange($event.target.valueAsNumber)"
                   />
                   <FieldError
                     v-if="isInvalid(lowerRankLimitField)"
-                    :errors="lowerRankLimitField.state.meta.errors"
+                    :errors="lowerRankLimitField.errors ?? []"
                   />
                 </Field>
                 <Field :data-invalid="isInvalid(upperRankLimitField)">
-                  <FieldLabel :for="upperRankLimitField.name">Upper Rank Limit</FieldLabel>
+                  <FieldLabel :for="upperRankLimitField.props.name">Upper Rank Limit</FieldLabel>
                   <FieldDescription> If not set, it'll default to infinity. </FieldDescription>
                   <Input
                     type="number"
-                    :id="upperRankLimitField.name"
-                    :name="upperRankLimitField.name"
-                    :model-value="upperRankLimitField.state.value ?? undefined"
+                    :id="upperRankLimitField.props.name"
+                    v-model.number="upperRankLimitField.input"
                     :aria-invalid="isInvalid(upperRankLimitField)"
-                    @blur="upperRankLimitField.handleBlur"
-                    @input="upperRankLimitField.handleChange($event.target.valueAsNumber)"
+                    v-bind="upperRankLimitField.props"
                   />
                   <FieldError
                     v-if="isInvalid(upperRankLimitField)"
-                    :errors="upperRankLimitField.state.meta.errors"
+                    :errors="upperRankLimitField.errors ?? []"
                   />
                 </Field>
               </FieldGroup>
             </Transition>
           </div>
-        </form.Field>
-      </form.Field>
+        </FormField>
+      </FormField>
     </FieldGroup>
-  </form>
-  <Button :form="formId" class="w-fit" type="submit">Create</Button>
+    <Button :form="formId" class="w-fit" type="submit">Create</Button>
+  </Form>
 </template>

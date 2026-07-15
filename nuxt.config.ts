@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     "evlog/nuxt",
     "@nuxt/icon",
     "@nuxt/image",
+    "@comark/nuxt",
   ],
   evlog: {
     env: {

@@ -1,4 +1,4 @@
-import { gt, isNotNull, isNull, or } from "drizzle-orm";
+import { isNotNull, isNull, lt, or } from "drizzle-orm";
 import type { PgTimestampConfig } from "drizzle-orm/pg-core";
 import {
   check,
@@ -29,6 +29,14 @@ const timestampColumns = () => {
 };
 
 export const TournamentType = pgEnum("tournament_type", ["teams", "solo"]);
+export const TournamentDateType = pgEnum("tournament_date_type", [
+  "stage",
+  "screening",
+  "showmatch",
+  "holiday",
+  "other",
+]);
+
 export const StaffRoles = pgEnum("staff_roles", [
   "admin",
   "playtester",
@@ -146,6 +154,10 @@ export const tournaments = snakeCase.table(
       type: "linear",
       year: null,
     }),
+    playerRegistrationStart: t.timestamp(timestampConfig),
+    playerRegistrationEnd: t.timestamp(timestampConfig),
+    staffRegistrationStart: t.timestamp(timestampConfig),
+    staffRegistrationEnd: t.timestamp(timestampConfig),
     hostUserId: t
       .integer()
       .notNull()
@@ -156,7 +168,7 @@ export const tournaments = snakeCase.table(
   (t) => [
     index("idx_tournament_deleted_at").on(t.deletedAt),
     uniqueIndex("idx_tournament_name").on(t.name).where(isNull(t.deletedAt)),
-    check("check_tournament_rank_gt", gt(t.upperRankLimit, t.lowerRankLimit)),
+    check("check_tournament_rank_gt", lt(t.upperRankLimit, t.lowerRankLimit)),
     check(
       "check_tournament_rank_limits",
       // @ts-expect-error
@@ -180,6 +192,26 @@ export const tournamentAccess = snakeCase.table(
     ...timestampColumns(),
   }),
   (t) => [primaryKey({ columns: [t.tournamentId, t.userId] })],
+);
+
+export const tournamentDates = snakeCase.table(
+  "tournament_date",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    tournamentId: t
+      .integer()
+      .notNull()
+      .references(() => tournaments.id, { onDelete: "cascade" }),
+    label: t.varchar().notNull(),
+    type: TournamentDateType().notNull(),
+    startDate: t.timestamp(timestampConfig).notNull(),
+    endDate: t.timestamp(timestampConfig).notNull(),
+    ...timestampColumns(),
+  }),
+  (t) => [
+    uniqueIndex("udx_tournament_id_tournament_date_label").on(t.label, t.tournamentId),
+    index("idx_tournament_start_date").on(t.tournamentId, t.startDate),
+  ],
 );
 
 export type UserSelect = typeof users.$inferSelect;

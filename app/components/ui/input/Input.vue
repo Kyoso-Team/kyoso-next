@@ -1,28 +1,35 @@
 <script setup lang="ts">
 import { useVModel } from "@vueuse/core";
-import type { HTMLAttributes } from "vue";
+import { computed, type HTMLAttributes } from "vue";
 
 import { cn } from "@/lib/utils";
 
 const props = defineProps<{
   defaultValue?: string | number;
-  modelValue?: string | number;
+  modelValue?: string | number | null | undefined;
   class?: HTMLAttributes["class"];
 }>();
 
 const emits = defineEmits<{
-  (e: "update:modelValue", payload: string | number): void;
+  (e: "update:modelValue", payload: string | number | null): void;
 }>();
 
-const modelValue = useVModel(props, "modelValue", emits, {
+const inner = useVModel(props, "modelValue", emits, {
   passive: true,
   defaultValue: props.defaultValue,
+});
+
+const inputModelValue = computed({
+  get: () => (inner.value == null ? "" : inner.value),
+  set: (value) => {
+    inner.value = value === "" ? null : value;
+  },
 });
 </script>
 
 <template>
   <input
-    v-model="modelValue"
+    v-model="inputModelValue"
     data-slot="input"
     :class="
       cn(

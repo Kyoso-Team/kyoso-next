@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ProfileMenu from "~/components/ProfileMenu.vue";
 import { SidebarGroup } from "~/components/ui/sidebar";
-import { buildUrl } from "~/lib/utils";
+import { buildUrl, cn } from "~/lib/utils";
 
 const route = useRoute("tournaments-slug");
 
@@ -114,8 +114,12 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
         </Sidebar>
       </Popover>
       <SidebarInset class="h-svh p-2">
-        <Card class="flex h-full overflow-auto">
-          <CardContent class="w-full max-w-5xl">
+        <Card
+          :class="cn('flex h-full overflow-auto', $route.name === 'tournaments-slug' && 'py-0')"
+        >
+          <CardContent
+            :class="cn('flex size-full flex-col', $route.name === 'tournaments-slug' && 'p-0')"
+          >
             <slot />
           </CardContent>
         </Card>

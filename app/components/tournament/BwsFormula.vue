@@ -9,7 +9,7 @@ const {
     z: 1,
   },
 } = defineProps<{
-  bwsSettings?: BWSSettings;
+  bwsSettings?: Partial<BWSSettings>;
 }>();
 </script>
 
