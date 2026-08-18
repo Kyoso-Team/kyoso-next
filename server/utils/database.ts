@@ -9,9 +9,9 @@ export function pick<TTable extends PgTable, TSelection extends Selection<TTable
   table: TTable,
   select: TSelection,
 ): {
-  [K in keyof TTable["_"]["columns"] as TSelection[K] extends true
-    ? K
-    : never]: TTable["_"]["columns"][K];
+  [
+    K in keyof TTable["_"]["columns"] as TSelection[K] extends true ? K : never
+  ]: TTable["_"]["columns"][K];
 } {
   // biome-ignore lint: need any to work
   const selection: Record<string, any> = {};

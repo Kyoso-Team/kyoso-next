@@ -1,4 +1,4 @@
-import { createSelectSchema } from "drizzle-orm/valibot";
+import { createInsertSchema, createSelectSchema } from "drizzle-orm/valibot";
 import * as v from "valibot";
 import { tournamentDates } from "~~/server/database/schema";
 
@@ -16,9 +16,32 @@ export const tournamentDatesSchema = v.object({
 });
 export type TournamentDates = v.InferOutput<typeof tournamentDatesSchema>;
 
+export const tournamentDateCreateSchema = v.pipe(
+  v.object(
+    v.pick(
+      createInsertSchema(tournamentDates, {
+        startDate: v.pipe(v.string("Start date required"), v.toDate("Invalid date")),
+        endDate: v.pipe(v.string("End date required"), v.toDate("Invalid date")),
+        label: v.pipe(
+          v.string("Label required"),
+          v.minLength(2, "Label must be at least 2 characters long."),
+        ),
+      }),
+      ["label", "type", "startDate", "endDate"],
+    ).entries,
+  ),
+  v.check((input) => {
+    console.log(input);
+    return new Date(input.startDate) <= new Date(input.endDate);
+  }, "Start date must be before end date."),
+);
+export type TournamentDateCreate = v.InferOutput<typeof tournamentDateCreateSchema>;
+
 export const tournamentDatesFormSchema = v.pipe(
   tournamentDatesSchema,
   v.check((input) => {
+    console.log(input);
+
     if (input.playerRegs) {
       return input.playerRegs.start <= input.playerRegs.end;
     }

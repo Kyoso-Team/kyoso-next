@@ -7,13 +7,13 @@ export default defineEventHandler(async (event) => {
     return;
   }
 
-  const origin = getHeader(event, "origin");
+  const secFetchSiteHeader = getHeader(event, "Sec-Fetch-Site");
 
-  if (origin === "kyoso.com") {
+  if (secFetchSiteHeader && secFetchSiteHeader !== "same-origin") {
     return;
   }
 
   throw createError({
-    statusCode: 419,
+    statusCode: 403,
   });
 });

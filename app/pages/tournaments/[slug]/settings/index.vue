@@ -18,7 +18,7 @@ const updateTournament = async (values: UpdateTournament) => {
 </script>
 
 <template>
-  <div v-if="tournament" class="flex flex-col gap-8">
+  <div v-if="tournament" class="flex flex-col gap-8 pb-4">
     <TournamentGeneralSettings @submit="updateTournament" :tournament="tournament" />
     <TournamentDateSettings :dates="tournament.tournamentDates" />
   </div>

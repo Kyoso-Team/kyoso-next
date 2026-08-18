@@ -11,7 +11,8 @@ const { error: tournamentError } = await useTournament(route.params.slug);
 
 if (tournamentError.value) {
   throw createError({
-    status: tournamentError.value.statusCode,
+    status: tournamentError.value.status,
+    // @ts-expect-error
     message: tournamentError.value.data?.message ?? tournamentError.value.message,
   });
 }

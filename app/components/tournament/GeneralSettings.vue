@@ -52,18 +52,24 @@ const submitForm: SubmitHandler<typeof updateTournamentSchema> = (values) => {
   }
 };
 
-const isOpenRank = ref(
-  props.tournament.lowerRankLimit === null && props.tournament.upperRankLimit === null,
-);
-
-watch(isOpenRank, (value) => {
-  if (value) {
-    setInput(form, { input: null, path: ["lowerRankLimit"] });
-    setInput(form, { input: null, path: ["upperRankLimit"] });
-  } else {
-    reset(form, { path: ["lowerRankLimit"] });
-    reset(form, { path: ["upperRankLimit"] });
-  }
+const isOpenRank = computed({
+  get: () =>
+    getInput(form, { path: ["lowerRankLimit"] }) === null &&
+    getInput(form, { path: ["upperRankLimit"] }) === null,
+  set: (value) => {
+    if (value) {
+      setInput(form, { input: null, path: ["lowerRankLimit"] });
+      setInput(form, { input: null, path: ["upperRankLimit"] });
+    } else {
+      reset(form, { path: ["lowerRankLimit"] });
+      reset(form, { path: ["upperRankLimit"] });
+      // Initial values are open rank, so there is nothing to restore
+      if (getInput(form, { path: ["lowerRankLimit"] }) === null) {
+        setInput(form, { input: undefined, path: ["lowerRankLimit"] });
+        setInput(form, { input: undefined, path: ["upperRankLimit"] });
+      }
+    }
+  },
 });
 
 const bwsSettings = useField(form, {
@@ -105,10 +111,6 @@ const isBws = computed({
 });
 
 const hasUnsavedChanges = computed(() => getDirtyInput(form));
-
-const revertToDefault = () => {
-  reset(form);
-};
 </script>
 
 <template>
@@ -344,10 +346,12 @@ const revertToDefault = () => {
           </FieldGroup>
           <div class="flex w-full items-center justify-between">
             <div class="flex items-center gap-2">
-              <Button type="button" variant="destructive" @click="revertToDefault"> Reset </Button>
+              <Button type="button" variant="destructive" @click="() => reset(form)">
+                Reset
+              </Button>
               <Alert class="bg-accent transition duration-300" v-show="hasUnsavedChanges">
                 <AlertDescription class="flex items-center gap-2">
-                  <Icon name="fa7-solid:triangle-exclamation" size="16"></Icon>
+                  <Icon name="fa7-solid:triangle-exclamation" size="16" />
                   You have unsaved changes
                 </AlertDescription>
               </Alert>

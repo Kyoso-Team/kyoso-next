@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 
 const props = defineProps<{
   defaultValue?: string | number;
-  modelValue?: string | number | null | undefined;
+  modelValue?: string | number | Date | null | undefined;
   class?: HTMLAttributes["class"];
 }>();
 
 const emits = defineEmits<{
-  (e: "update:modelValue", payload: string | number | null): void;
+  (e: "update:modelValue", payload: string | number | Date | null): void;
 }>();
 
 const inner = useVModel(props, "modelValue", emits, {
