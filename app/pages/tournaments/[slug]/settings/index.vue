@@ -3,7 +3,7 @@ import { toast } from "vue-sonner";
 import type { UpdateTournament } from "~~/shared/validation/tournaments";
 
 const route = useRoute("tournaments-slug-settings");
-const { data: tournament, refresh } = await useTournament(route.params.slug);
+const { data: tournament, refresh } = useTournament();
 
 const updateTournament = async (values: UpdateTournament) => {
   await $fetch(`/api/tournaments/${route.params.slug}`, {
@@ -18,8 +18,11 @@ const updateTournament = async (values: UpdateTournament) => {
 </script>
 
 <template>
-  <div v-if="tournament" class="flex flex-col gap-8 pb-4">
-    <TournamentGeneralSettings @submit="updateTournament" :tournament="tournament" />
-    <TournamentDateSettings :dates="tournament.tournamentDates" />
+  <div v-if="tournament" class="relative flex gap-3">
+    <div class="flex w-3/4 flex-col gap-8 pb-4">
+      <TournamentGeneralSettings @submit="updateTournament" :tournament="tournament" />
+      <TournamentDateSettings :dates="tournament.tournamentDates" />
+    </div>
+    <TournamentRequirementsChecklist />
   </div>
 </template>

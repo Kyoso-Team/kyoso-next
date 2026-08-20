@@ -1,6 +1,9 @@
-export function useSession() {
-  return useFetch("/api/auth/session", {
-    key: "session",
-    headers: useRequestHeaders(["cookie"]),
+export const useSession = defineQuery(() => {
+  return useQuery({
+    key: () => ["session"],
+    query: () =>
+      $fetch("/api/auth/session", {
+        headers: useRequestHeaders(["cookie"]),
+      }),
   });
-}
+});

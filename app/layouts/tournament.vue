@@ -7,13 +7,12 @@ const route = useRoute("tournaments-slug");
 
 const { data: session } = await useSession();
 
-const { error: tournamentError } = await useTournament(route.params.slug);
+const { error: tournamentError } = useTournament();
 
 if (tournamentError.value) {
+  console.error(tournamentError.value);
   throw createError({
-    status: tournamentError.value.status,
-    // @ts-expect-error
-    message: tournamentError.value.data?.message ?? tournamentError.value.message,
+    message: tournamentError.value.message,
   });
 }
 

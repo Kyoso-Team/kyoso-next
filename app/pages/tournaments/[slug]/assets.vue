@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const route = useRoute("tournaments-slug");
-
-const { data: tournament } = useTournament(route.params.slug);
+const { data: tournament } = useTournament();
 </script>
 
 <template>

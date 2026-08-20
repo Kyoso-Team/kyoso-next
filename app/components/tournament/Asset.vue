@@ -9,10 +9,7 @@ const props = defineProps<{
   type: "logo" | "banner";
 }>();
 
-const route = useRoute("tournaments-slug");
-
-const { setModal } = useModal();
-const { refresh } = useTournament(route.params.slug);
+const { refresh } = useTournament();
 
 const { uploadFile, uploading } = useS3Upload();
 

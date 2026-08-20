@@ -1,12 +1,12 @@
 import type { InferOutput } from "valibot";
 import type { createTournamentSchema } from "~~/shared/validation/tournaments";
 
+import { tournamentsQuery } from "~/queries/tournament";
+
 export const useTournamentsList = () => {
   const { setModal } = useModal();
 
-  const { data: tournaments, refresh } = useFetch("/api/tournaments/list", {
-    key: "tournaments",
-  });
+  const { data: tournaments, refresh } = useQuery(tournamentsQuery());
 
   const createTournament = async (values: InferOutput<typeof createTournamentSchema>) => {
     await $fetch("/api/tournaments", {

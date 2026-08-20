@@ -12,6 +12,8 @@ export function isInvalid<
   field:
     | FieldStore<TSchema, TFieldPath>
     | FieldArrayStore<TSchema, TFieldPath>,
+  onlyEdited = true
 ) {
-  return field.errors && field.isEdited && !field.isValid;
+  const condition = field.errors && !field.isValid
+  return onlyEdited ? condition && field.isEdited : condition;
 }

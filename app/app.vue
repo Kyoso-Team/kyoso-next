@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import "vue-sonner/style.css";
+import { PiniaColadaDevtools } from "@pinia/colada-devtools";
 
 const { modal, setModal } = useModal();
 
@@ -38,12 +39,13 @@ useSeoMeta({
     </NuxtLayout>
 
     <Dialog :open="modal !== null" @update:open="(v) => !v && setModal(null)">
-      <DialogScrollContent>
+      <DialogContent>
         <component v-if="modal" :is="modal" />
-      </DialogScrollContent>
+      </DialogContent>
     </Dialog>
     <Toaster richColors position="bottom-right" class="pointer-events-auto" />
   </div>
+  <PiniaColadaDevtools />
 </template>
 
 <style>

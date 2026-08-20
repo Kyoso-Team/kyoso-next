@@ -22,6 +22,8 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/image",
     "@comark/nuxt",
+    "@pinia/colada-nuxt",
+    "@pinia/nuxt",
   ],
   evlog: {
     env: {

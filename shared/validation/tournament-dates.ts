@@ -26,6 +26,7 @@ export const tournamentDateCreateSchema = v.pipe(
           v.string("Label required"),
           v.minLength(2, "Label must be at least 2 characters long."),
         ),
+        type: (schema) => v.pipe(schema, v.nonEmpty("Date type is required")),
       }),
       ["label", "type", "startDate", "endDate"],
     ).entries,

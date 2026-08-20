@@ -1,20 +1,15 @@
-import { eq } from "drizzle-orm";
-
 import { db } from "../database/client";
-import { tournaments } from "../database/schema";
 
 export const getRules = defineCachedFunction(
   async (slug: string) => {
-    const rules = await db
-      .select(
-        pick(tournaments, {
-          rules: true,
-        }),
-      )
-      .from(tournaments)
-      .where(eq(tournaments.slug, slug))
-      .limit(1)
-      .then(([rules]) => rules);
+    const rules = await db.query.tournaments.findFirst({
+      columns: {
+        rules: true,
+      },
+      where: {
+        slug,
+      },
+    });
 
     return rules?.rules;
   },

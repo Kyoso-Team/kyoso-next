@@ -3,10 +3,11 @@ import dayjs from "dayjs";
 
 import { cn } from "~/lib/utils";
 
-const { slug } = useRoute().params;
-const { data: tournament } = useTournament(slug);
+const { tournament } = useTournament();
 
-const bannerImage = computed(() => tournament.value?.banner ?? "/tournament-banner-full.jpeg");
+const bannerImage = computed(
+  () => tournament.value?.data?.banner ?? "/tournament-banner-full.jpeg",
+);
 
 const dates: { stage: string; start: string; end: string }[] = [
   {
@@ -45,6 +46,78 @@ const dates: { stage: string; start: string; end: string }[] = [
       second: 59,
     }).toLocaleString(),
   },
+  {
+    stage: "Group Stage",
+    start: Temporal.PlainDate.from({ year: 2026, month: 7, day: 20 }).toLocaleString(),
+    end: Temporal.PlainDate.from({
+      year: 2026,
+      month: 8,
+      day: 9,
+      hour: 23,
+      minute: 59,
+      second: 59,
+    }).toLocaleString(),
+  },
+  {
+    stage: "Round of 16",
+    start: Temporal.PlainDate.from({ year: 2026, month: 8, day: 10 }).toLocaleString(),
+    end: Temporal.PlainDate.from({
+      year: 2026,
+      month: 8,
+      day: 16,
+      hour: 23,
+      minute: 59,
+      second: 59,
+    }).toLocaleString(),
+  },
+  {
+    stage: "Quarterfinals",
+    start: Temporal.PlainDate.from({ year: 2026, month: 8, day: 17 }).toLocaleString(),
+    end: Temporal.PlainDate.from({
+      year: 2026,
+      month: 8,
+      day: 23,
+      hour: 23,
+      minute: 59,
+      second: 59,
+    }).toLocaleString(),
+  },
+  {
+    stage: "Semifinals",
+    start: Temporal.PlainDate.from({ year: 2026, month: 8, day: 24 }).toLocaleString(),
+    end: Temporal.PlainDate.from({
+      year: 2026,
+      month: 8,
+      day: 30,
+      hour: 23,
+      minute: 59,
+      second: 59,
+    }).toLocaleString(),
+  },
+  {
+    stage: "Finals",
+    start: Temporal.PlainDate.from({ year: 2026, month: 8, day: 31 }).toLocaleString(),
+    end: Temporal.PlainDate.from({
+      year: 2026,
+      month: 9,
+      day: 6,
+      hour: 23,
+      minute: 59,
+      second: 59,
+    }).toLocaleString(),
+  },
+  {
+    stage: "Grand Finals",
+    start: Temporal.PlainDate.from({ year: 2026, month: 9, day: 7 }).toLocaleString(),
+    end: Temporal.PlainDate.from({
+      year: 2026,
+      month: 9,
+      day: 20,
+      hour: 23,
+      minute: 59,
+      second: 59,
+    }).toLocaleString(),
+  },
 ];
 
 const getStageStatusStyles = (startDate: string, endDate: string) => {
@@ -63,11 +136,11 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
 </script>
 
 <template>
-  <div v-if="tournament" class="flex size-full min-h-0 flex-1 flex-col">
+  <div v-if="tournament.data" class="flex size-full min-h-0 flex-1 flex-col">
     <div class="h-24 w-full shrink-0 border-b-2 sm:h-32">
       <NuxtImg
         :src="bannerImage"
-        :alt="`${tournament.slug}-banner`"
+        :alt="`${tournament.data.slug}-banner`"
         class="size-full object-cover object-top opacity-30"
       />
     </div>
@@ -76,7 +149,7 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
     >
       <Card class="size-full w-full lg:w-3/4">
         <CardHeader>
-          <CardTitle class="text-3xl">{{ tournament.name }}</CardTitle>
+          <CardTitle class="text-3xl">{{ tournament.data.name }}</CardTitle>
         </CardHeader>
         <CardContent
           class="scrollbar-thumb-primary/80 scrollbar-track-none relative scrollbar-thin overflow-y-auto"
@@ -87,19 +160,21 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
               <TabsTrigger value="rules"> Rules </TabsTrigger>
             </TabsList>
             <TabsContent value="rules" class="h-full">
-              <TournamentRules :slug="slug" />
+              <TournamentRules :slug="tournament.data.slug" />
             </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
       <Card class="size-full w-full lg:w-1/4">
-        <CardContent class="space-y-6">
+        <CardContent class="flex max-h-full flex-col space-y-6">
           <div class="flex flex-col gap-2">
             <Button class="h-11 w-full">Register as player</Button>
             <Button class="h-11 w-full">Apply for staff</Button>
           </div>
-          <div class="bg-accent text-accent-foreground flex min-h-20 flex-col gap-3 rounded-md p-3">
-            <Tabs default-value="dates">
+          <div
+            class="bg-accent text-accent-foreground flex min-h-0 flex-1 flex-col gap-3 overflow-hidden rounded-md p-3"
+          >
+            <Tabs default-value="dates" class="flex min-h-0 flex-1 flex-col">
               <TabsList class="w-full">
                 <TabsTrigger value="dates" class="flex-1">
                   <Icon name="fa7-solid:calendar" size="16" />
@@ -110,8 +185,8 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
                   <span>Links</span>
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="dates" class="h-full">
-                <ul class="space-y-2">
+              <TabsContent value="dates" class="min-h-0 overflow-auto">
+                <ul class="flex w-full flex-col space-y-1">
                   <li
                     v-for="date in dates"
                     :key="date.stage"

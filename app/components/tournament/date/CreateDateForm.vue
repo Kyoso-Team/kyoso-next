@@ -13,7 +13,8 @@ const emits = defineEmits<{
 
 const form = useForm({
   schema: tournamentDateCreateSchema,
-  validate: "input",
+  validate: "blur",
+  revalidate: "input",
 });
 
 const startDate = useField(form, {
@@ -30,8 +31,10 @@ const submit: SubmitHandler<typeof tournamentDateCreateSchema> = async (values) 
     <FieldGroup>
       <FormField :of="form" :path="['label']" v-slot="field">
         <Field :data-invalid="isInvalid(field)">
-          <FieldLabel required :for="field.props.name">Label</FieldLabel>
-          <FieldDescription> What is this date for? </FieldDescription>
+          <FieldContent>
+            <FieldLabel required :for="field.props.name">Label</FieldLabel>
+            <FieldDescription> What is this date for? </FieldDescription>
+          </FieldContent>
           <Input
             required
             type="text"

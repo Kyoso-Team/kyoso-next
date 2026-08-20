@@ -17,6 +17,7 @@ export default defineTournamentAccessHandler(async (_event, { tournament }) => {
       maxTeamSize: true,
       lowerRankLimit: true,
       upperRankLimit: true,
+      isOpenRank: true,
       bwsSettings: true,
       playerRegistrationStart: true,
       playerRegistrationEnd: true,
@@ -58,8 +59,15 @@ export default defineTournamentAccessHandler(async (_event, { tournament }) => {
     },
   };
 
+  const rest = omit(result, [
+    "playerRegistrationStart",
+    "playerRegistrationEnd",
+    "staffRegistrationStart",
+    "staffRegistrationEnd",
+  ]);
+
   return {
-    ...result,
+    ...rest,
     logo: result!.logo ? getAssetUrl(result!.logo.fileId) : null,
     banner: result!.banner ? getAssetUrl(result!.banner.fileId) : null,
     tournamentDates: dates,

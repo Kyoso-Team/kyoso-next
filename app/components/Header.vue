@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { buildUrl } from "~/lib/utils";
 
-const { data: session } = await useSession();
+const { data: session } = useSession();
 </script>
 
 <template>

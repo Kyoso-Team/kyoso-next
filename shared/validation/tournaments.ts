@@ -1,74 +1,24 @@
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-orm/valibot";
+import { createSelectSchema, createUpdateSchema } from "drizzle-orm/valibot";
 import * as v from "valibot";
 import { tournaments } from "~~/server/database/schema";
 import { bwsSettingsSchema } from "~~/server/utils/validation/tournament";
 
-import { initialUndefinedSchema } from "./common";
 import { tournamentDatesSchema } from "./tournament-dates";
 
-const createSchema = createInsertSchema(tournaments, {
-  name: (schema) => v.pipe(schema, v.minLength(2, "Input must have 2 character(s) or more.")),
-  slug: (schema) => v.pipe(schema, v.minLength(2, "Input must have 2 character(s) or more.")),
-  acronym: (schema) => v.pipe(schema, v.minLength(2, "Input must have 2 character(s) or more.")),
-  minTeamSize: initialUndefinedSchema(v.number("Min team size is required")),
-  maxTeamSize: initialUndefinedSchema(v.number("Max team size is required")),
-  lowerRankLimit: v.undefinedable(v.number("Lower rank limit is required")),
-  upperRankLimit: v.undefinedable(v.number("Upper rank limit is required")),
+export const createTournamentSchema = v.object({
+  name: v.pipe(v.string(), v.minLength(2, "Tournament name must be at least 2 characters long.")),
+  slug: v.pipe(v.string(), v.minLength(2, "Tournament slug must be at least 2 characters long.")),
+  acronym: v.pipe(
+    v.string(),
+    v.minLength(2, "Tournament acronym must be at least 2 characters long."),
+  ),
 });
 
-const { name, slug, acronym, type, minTeamSize, maxTeamSize, lowerRankLimit, upperRankLimit } =
-  createSchema.entries;
-
-export const createTournamentSchema = v.pipe(
-  v.object({
-    name,
-    slug,
-    acronym,
-    type,
-    minTeamSize,
-    maxTeamSize,
-    lowerRankLimit,
-    upperRankLimit,
-  }),
-  v.forward(
-    v.partialCheck(
-      [["minTeamSize"], ["maxTeamSize"]],
-      (input) => {
-        return input.maxTeamSize >= input.minTeamSize;
-      },
-      "Max team size cannot be less than min team size",
-    ),
-    ["minTeamSize"],
-  ),
-  v.forward(
-    v.partialCheck(
-      [["lowerRankLimit"], ["upperRankLimit"]],
-      (input) => {
-        return input.upperRankLimit === null || input.lowerRankLimit !== null;
-      },
-      "Lower rank limit must be defined",
-    ),
-    ["lowerRankLimit"],
-  ),
-  v.forward(
-    v.partialCheck(
-      [["lowerRankLimit"], ["upperRankLimit"]],
-      (input) => {
-        if (!!input.upperRankLimit && !!input.lowerRankLimit) {
-          return input.upperRankLimit >= input.lowerRankLimit;
-        }
-        return true;
-      },
-      "Upper rank limit must be greater than lower rank limit",
-    ),
-    ["upperRankLimit"],
-  ),
-);
-
 const updateSchema = createUpdateSchema(tournaments, {
-  name: (schema) => v.pipe(schema, v.minLength(2, "Input must have 2 character(s) or more.")),
-  slug: (schema) => v.pipe(schema, v.minLength(2, "Input must have 2 character(s) or more.")),
-  acronym: (schema) => v.pipe(schema, v.minLength(2, "Input must have 2 character(s) or more.")),
+  name: (schema) => v.pipe(schema, v.minLength(2, "Name must be at least 2 characters long.")),
+  slug: (schema) => v.pipe(schema, v.minLength(2, "Slug must be at least 2 characters long.")),
+  acronym: (schema) =>
+    v.pipe(schema, v.minLength(2, "Acronym must be at least 2 characters long.")),
   bwsSettings: v.optional(bwsSettingsSchema),
   lowerRankLimit: v.nullish(v.number("Lower rank limit is required")),
   upperRankLimit: v.nullish(v.number("Upper rank limit is required")),
@@ -86,70 +36,76 @@ export const updateTournamentSchema = v.pipe(
     ...updateEntries,
     bwsSettings: v.pipe(
       v.nullish(bwsSettingsSchema),
-      v.check((input) => {
-        if (input?.type === "linear") {
-          return input.z === 1;
-        }
-        return true;
-      }, "Invalid BWS formula parameters"),
+      v.check(
+        (input) => input?.type !== "linear" || input.z === 1,
+        "Invalid BWS formula parameters",
+      ),
     ),
+  }),
+  v.rawCheck(({ dataset, addIssue }) => {
+    if (!dataset.typed) return;
+
+    const { maxTeamSize, minTeamSize, type } = dataset.value;
+    const hasMaxTeamSize = maxTeamSize != null;
+    const hasMinTeamSize = minTeamSize != null;
+    const hasBothTeamSizes = hasMaxTeamSize && hasMinTeamSize;
+    const isTeamTournament = type === "teams";
+
+    const addIssueFor = (key: "maxTeamSize" | "minTeamSize", message: string) => {
+      addIssue({
+        message,
+        path: [
+          {
+            key,
+            type: "object",
+            origin: "value",
+            input: dataset.value,
+            value: dataset.value[key],
+          },
+        ],
+      });
+    };
+
+    if (hasBothTeamSizes && !isTeamTournament) {
+      addIssueFor("maxTeamSize", "Solo tournaments cannot have a team size");
+      addIssueFor("minTeamSize", "Solo tournaments cannot have a team size");
+    }
+
+    if (isTeamTournament && !hasBothTeamSizes) {
+      if (!hasMaxTeamSize) addIssueFor("maxTeamSize", "Team size required");
+      if (!hasMinTeamSize) addIssueFor("minTeamSize", "Team size required");
+    }
+
+    if (hasBothTeamSizes && (maxTeamSize <= 1 || minTeamSize <= 1)) {
+      if (maxTeamSize <= 1) addIssueFor("maxTeamSize", "Max team size must be greater than 1");
+      if (minTeamSize <= 1) addIssueFor("minTeamSize", "Min team size must be greater than 1");
+    }
   }),
   v.forward(
     v.check((input) => {
-      if (!input.maxTeamSize || !input.minTeamSize) {
-        return true;
-      }
-      return input.maxTeamSize >= input.minTeamSize;
-    }, "Max team size cannot be less than min team size"),
-    ["minTeamSize"],
-  ),
-  v.forward(
-    v.check((input) => {
-      if (input.type === "teams") {
-        return input.maxTeamSize !== 1 || input.minTeamSize !== 1;
+      if (!input.isOpenRank) {
+        return input.lowerRankLimit !== null;
       }
       return true;
-    }, "Team size cannot be 1 for non-team tournaments"),
-    ["maxTeamSize"],
+    }, "Lower rank limit required"),
+    ["lowerRankLimit"],
   ),
   v.forward(
     v.partialCheck(
       [["lowerRankLimit"], ["upperRankLimit"]],
       (input) => {
-        return input.lowerRankLimit === null || input.upperRankLimit !== null;
-      },
-      "Lower rank limit must be defined",
-    ),
-    ["lowerRankLimit"],
-  ),
-  v.forward(
-    v.partialCheck(
-      [["upperRankLimit"], ["lowerRankLimit"]],
-      (input) => {
-        if (!!input.upperRankLimit && !!input.lowerRankLimit) {
-          console.log(input.upperRankLimit, input.lowerRankLimit);
-          return input.upperRankLimit < input.lowerRankLimit;
+        if (!!input.lowerRankLimit && !!input.upperRankLimit) {
+          return input.upperRankLimit <= input.lowerRankLimit;
         }
         return true;
       },
-      "Upper rank limit must be greater than lower rank limit",
+      "Lower rank limit must be greater than upper rank limit",
     ),
-    ["upperRankLimit"],
+    ["lowerRankLimit"],
   ),
 );
 
-export const updateTournamentApiSchema = v.pipe(
-  updateTournamentSchema,
-  v.check((input) => {
-    if (!input.name?.trim()) return false;
-    if (!input.slug?.trim()) return false;
-    if (!input.acronym?.trim()) return false;
-    return true;
-  }, "Name, slug, and acronym are required"),
-);
-
 export type UpdateTournament = v.InferOutput<typeof updateTournamentSchema>;
-export type UpdateTournamentApi = v.InferOutput<typeof updateTournamentApiSchema>;
 
 export const selectTournamentSchema = createSelectSchema(tournaments, {
   bwsSettings: v.nullable(bwsSettingsSchema),

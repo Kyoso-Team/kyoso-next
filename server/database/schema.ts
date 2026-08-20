@@ -24,7 +24,10 @@ const timestampConfig: PgTimestampConfig = {
 const timestampColumns = () => {
   return {
     createdAt: timestamp(timestampConfig).notNull().defaultNow(),
-    updatedAt: timestamp(timestampConfig).notNull().defaultNow(),
+    updatedAt: timestamp(timestampConfig)
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   };
 };
 
@@ -132,18 +135,18 @@ export const tournaments = snakeCase.table(
       })
       .unique()
       .notNull(),
-    acronym: t
-      .varchar({
-        length: 8,
-      })
-      .notNull(),
-    type: TournamentType().notNull(),
+    acronym: t.varchar({
+      length: 8,
+    }),
+    type: TournamentType(),
     /** Written as Markdown */
     rules: t.text(),
     logo: t.jsonb().$type<AssetMetadata>(),
     banner: t.jsonb().$type<AssetMetadata>(),
-    minTeamSize: t.integer().notNull(),
-    maxTeamSize: t.integer().notNull(),
+    minTeamSize: t.integer(),
+    maxTeamSize: t.integer(),
+    // need explicit field since we can't infer if tournament is open rank from initially empty team sizes
+    isOpenRank: t.boolean().default(false),
     lowerRankLimit: t.integer(),
     upperRankLimit: t.integer(),
     /** If null, then the tournament doesn't use BWS */

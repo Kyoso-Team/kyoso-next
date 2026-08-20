@@ -36,8 +36,12 @@ const datesArray = useFieldArray(form, {
   path: ["dates"],
 });
 
-const startTime = useField(form, {
+const playerRegsStartTime = useField(form, {
   path: ["playerRegs", "start"],
+});
+
+const staffRegsStartTime = useField(form, {
+  path: ["staffRegs", "start"],
 });
 
 const modalOpen = ref(false);
@@ -74,6 +78,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                     v-model="field.input"
                     v-bind="field.props"
                     :aria-invalid="isInvalid(field)"
+                    :min="new Date().toLocaleString('sv-SE')"
                   />
                   <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
                 </Field>
@@ -87,8 +92,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                     v-model="field.input"
                     v-bind="field.props"
                     :aria-invalid="isInvalid(field)"
-                    :disabled="!startTime.input"
-                    :min="startTime.input"
+                    :disabled="!playerRegsStartTime.input"
+                    :min="playerRegsStartTime.input"
                   />
                   <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
                 </Field>
@@ -117,8 +122,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                     v-model="field.input"
                     v-bind="field.props"
                     :aria-invalid="isInvalid(field)"
-                    :disabled="!startTime.input"
-                    :min="startTime.input"
+                    :disabled="!staffRegsStartTime.input"
+                    :min="staffRegsStartTime.input"
                   />
                   <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
                 </Field>

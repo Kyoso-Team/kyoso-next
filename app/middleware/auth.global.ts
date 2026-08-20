@@ -1,7 +1,8 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   if (to.path === "/login") return;
 
-  const { data: session } = await useSession();
+  const { data: session, refresh } = useSession();
+  await refresh();
 
   if (!session.value) {
     clearIdentity();

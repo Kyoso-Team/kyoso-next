@@ -52,25 +52,19 @@ const submitForm: SubmitHandler<typeof updateTournamentSchema> = (values) => {
   }
 };
 
-const isOpenRank = computed({
-  get: () =>
-    getInput(form, { path: ["lowerRankLimit"] }) === null &&
-    getInput(form, { path: ["upperRankLimit"] }) === null,
-  set: (value) => {
+const isOpenRank = useField(form, {
+  path: ["isOpenRank"],
+});
+
+watch(
+  () => isOpenRank.input,
+  (value) => {
     if (value) {
       setInput(form, { input: null, path: ["lowerRankLimit"] });
       setInput(form, { input: null, path: ["upperRankLimit"] });
-    } else {
-      reset(form, { path: ["lowerRankLimit"] });
-      reset(form, { path: ["upperRankLimit"] });
-      // Initial values are open rank, so there is nothing to restore
-      if (getInput(form, { path: ["lowerRankLimit"] }) === null) {
-        setInput(form, { input: undefined, path: ["lowerRankLimit"] });
-        setInput(form, { input: undefined, path: ["upperRankLimit"] });
-      }
     }
   },
-});
+);
 
 const bwsSettings = useField(form, {
   path: ["bwsSettings"],
@@ -83,11 +77,11 @@ const tournamentType = useField(form, {
 const isTeamTournament = computed(() => tournamentType.input === "teams");
 
 watch(
-  isTeamTournament,
-  (isTeam) => {
-    if (!isTeam) {
-      setInput(form, { input: 1, path: ["minTeamSize"] });
-      setInput(form, { input: 1, path: ["maxTeamSize"] });
+  () => tournamentType.input,
+  (type) => {
+    if (type && type !== "teams") {
+      setInput(form, { input: null, path: ["minTeamSize"] });
+      setInput(form, { input: null, path: ["maxTeamSize"] });
     } else {
       reset(form, { path: ["minTeamSize"] });
       reset(form, { path: ["maxTeamSize"] });
@@ -183,7 +177,7 @@ const hasUnsavedChanges = computed(() => getDirtyInput(form));
                 <Input
                   required
                   type="number"
-                  :disabled="tournamentType.input === 'solo'"
+                  :disabled="!isTeamTournament"
                   :id="field.props.name"
                   v-model="field.input"
                   v-bind="field.props"
@@ -198,7 +192,7 @@ const hasUnsavedChanges = computed(() => getDirtyInput(form));
                 <Input
                   required
                   type="number"
-                  :disabled="tournamentType.input === 'solo'"
+                  :disabled="!isTeamTournament"
                   :id="field.props.name"
                   v-model="field.input"
                   v-bind="field.props"
@@ -210,17 +204,25 @@ const hasUnsavedChanges = computed(() => getDirtyInput(form));
           </FieldGroup>
           <Separator />
           <FieldGroup class="grid grid-cols-[100%]">
-            <div class="flex items-center gap-2">
-              <Checkbox name="open-rank-checkbox" id="open-rank-checkbox" v-model="isOpenRank" />
-              <label for="open-rank-checkbox">Open rank?</label>
-            </div>
+            <FormField :of="form" :path="['isOpenRank']" v-slot="field">
+              <Field :data-invalid="isInvalid(field)">
+                <div class="flex items-center gap-2">
+                  <Checkbox
+                    name="open-rank-checkbox"
+                    id="open-rank-checkbox"
+                    v-model="isOpenRank.input"
+                  />
+                  <label for="open-rank-checkbox">Open rank?</label>
+                </div>
+              </Field>
+            </FormField>
             <div class="flex items-start gap-2">
               <FormField :of="form" :path="['upperRankLimit']" v-slot="field">
                 <Field :data-invalid="isInvalid(field)">
                   <FieldLabel :for="field.props.name">Upper Rank Limit</FieldLabel>
                   <Input
                     type="number"
-                    :disabled="isOpenRank"
+                    :disabled="isOpenRank.input"
                     :id="field.props.name"
                     v-model.number="field.input"
                     v-bind="field.props"
@@ -230,18 +232,18 @@ const hasUnsavedChanges = computed(() => getDirtyInput(form));
                 </Field>
               </FormField>
               <FormField v-slot="field" :of="form" :path="['lowerRankLimit']">
-                <Field :data-invalid="isInvalid(field)">
+                <Field :data-invalid="isInvalid(field, false)">
                   <FieldLabel :for="field.props.name">Lower Rank Limit</FieldLabel>
                   <Input
                     required
                     type="number"
-                    :disabled="isOpenRank"
+                    :disabled="isOpenRank.input"
                     :id="field.props.name"
                     v-model.number="field.input"
                     v-bind="field.props"
-                    :aria-invalid="isInvalid(field)"
+                    :aria-invalid="isInvalid(field, false)"
                   />
-                  <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
+                  <FieldError v-if="isInvalid(field, false)" :errors="field.errors ?? []" />
                 </Field>
               </FormField>
             </div>
