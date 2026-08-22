@@ -3,23 +3,40 @@ import {
   FieldArray,
   Form,
   Field as FormField,
+  getInput,
   insert,
+  pickDirty,
+  reset,
   useField,
   useFieldArray,
   useForm,
-  type SubmitHandler,
+  handleSubmit,
+  getDeepErrors,
 } from "@formisch/vue";
+import { today } from "@internationalized/date";
+import { toast } from "vue-sonner";
 import {
   tournamentDatesFormSchema,
   type TournamentDateCreate,
   type TournamentDates,
+  type UpdateTournamentDates,
 } from "~~/shared/validation/tournament-dates";
 
 import { isInvalid } from "~/components/ui/field/utils";
+import {
+  formatCalendarDate,
+  fromDateTimeLocalUTC,
+  toCalendarDateString,
+  toDateTimeLocalUTC,
+} from "~/lib/date";
+import { tournamentBySlugQuery } from "~/queries/tournament";
 
 import CreateDateForm from "./CreateDateForm.vue";
 
 const props = defineProps<{ dates: TournamentDates }>();
+
+const { params } = useRoute("tournaments-slug");
+const queryCache = useQueryCache();
 
 const dates = toRef(props.dates);
 
@@ -28,9 +45,30 @@ const form = useForm({
   initialInput: dates.value,
 });
 
-const handleSubmit: SubmitHandler<typeof tournamentDatesFormSchema> = async (values) => {
+const { mutate: updateDates } = useMutation({
+  mutation: async (values: UpdateTournamentDates) => {
+    await $fetch(`/api/tournaments/${params.slug}/dates`, {
+      method: "PATCH",
+      body: values,
+      headers: useRequestHeaders(["cookie"]),
+    });
+  },
+  onSuccess: () => {
+    toast.success("Dates updated successfully.");
+    queryCache.invalidateQueries({
+      key: tournamentBySlugQuery({ slug: params.slug }).key,
+    });
+    reset(form, { initialInput: getInput(form) });
+  },
+});
+
+const submitForm = handleSubmit(form, async (values) => {
   console.log(values);
-};
+  const dirty = pickDirty(form, { from: values });
+  if (dirty) {
+    updateDates(dirty as UpdateTournamentDates);
+  }
+});
 
 const datesArray = useFieldArray(form, {
   path: ["dates"],
@@ -38,6 +76,9 @@ const datesArray = useFieldArray(form, {
 
 const playerRegsStartTime = useField(form, {
   path: ["playerRegs", "start"],
+});
+const playerRegsEndTime = useField(form, {
+  path: ["playerRegs", "end"],
 });
 
 const staffRegsStartTime = useField(form, {
@@ -50,12 +91,6 @@ const handleAddDate = (date: TournamentDateCreate) => {
   insert(form, { path: ["dates"], initialInput: date });
   modalOpen.value = false;
 };
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-});
 </script>
 
 <template>
@@ -75,10 +110,12 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                   <Input
                     type="datetime-local"
                     :id="field.props.name"
-                    v-model="field.input"
+                    :model-value="toDateTimeLocalUTC(field.input)"
+                    @update:model-value="
+                      (value) => (field.input = fromDateTimeLocalUTC(value as string))
+                    "
                     v-bind="field.props"
                     :aria-invalid="isInvalid(field)"
-                    :min="new Date().toLocaleString('sv-SE')"
                   />
                   <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
                 </Field>
@@ -89,11 +126,14 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                   <Input
                     type="datetime-local"
                     :id="field.props.name"
-                    v-model="field.input"
+                    :model-value="toDateTimeLocalUTC(field.input)"
+                    @update:model-value="
+                      (value) => (field.input = fromDateTimeLocalUTC(value as string))
+                    "
                     v-bind="field.props"
                     :aria-invalid="isInvalid(field)"
                     :disabled="!playerRegsStartTime.input"
-                    :min="playerRegsStartTime.input"
+                    :min="toDateTimeLocalUTC(playerRegsStartTime.input)"
                   />
                   <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
                 </Field>
@@ -106,7 +146,10 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                   <Input
                     type="datetime-local"
                     :id="field.props.name"
-                    v-model="field.input"
+                    :model-value="toDateTimeLocalUTC(field.input)"
+                    @update:model-value="
+                      (value) => (field.input = fromDateTimeLocalUTC(value as string))
+                    "
                     v-bind="field.props"
                     :aria-invalid="isInvalid(field)"
                   />
@@ -119,11 +162,14 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                   <Input
                     type="datetime-local"
                     :id="field.props.name"
-                    v-model="field.input"
+                    :model-value="toDateTimeLocalUTC(field.input)"
+                    @update:model-value="
+                      (value) => (field.input = fromDateTimeLocalUTC(value as string))
+                    "
                     v-bind="field.props"
                     :aria-invalid="isInvalid(field)"
                     :disabled="!staffRegsStartTime.input"
-                    :min="staffRegsStartTime.input"
+                    :min="toDateTimeLocalUTC(staffRegsStartTime.input)"
                   />
                   <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
                 </Field>
@@ -158,8 +204,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                       >
                         <FormField :of="form" :path="['dates', index, 'endDate']" v-slot="endDate">
                           <span
-                            >{{ dateFormatter.format(startDate.input) }} -
-                            {{ dateFormatter.format(endDate.input) }}</span
+                            >{{ formatCalendarDate(startDate.input) }} -
+                            {{ formatCalendarDate(endDate.input) }}</span
                           >
                         </FormField>
                       </FormField>
@@ -170,7 +216,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
             </FieldArray>
             <div class="flex w-full items-center justify-between">
               <div class="flex items-center gap-2">
-                <Button type="button" variant="destructive"> Reset </Button>
+                <Button type="button" variant="destructive" @click="reset(form)"> Reset </Button>
                 <!-- <Alert class="bg-accent transition duration-300">
                   <AlertDescription class="flex items-center gap-2">
                     <Icon name="fa7-solid:triangle-exclamation" size="16" />
@@ -179,8 +225,25 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
                 </Alert> -->
               </div>
               <div class="flex gap-2">
-                <Button type="button" variant="secondary" @click="modalOpen = true"> Add </Button>
-                <Button type="submit"> Save </Button>
+                <Button
+                  type="button"
+                  :disabled="!playerRegsEndTime.input"
+                  variant="secondary"
+                  @click="modalOpen = true"
+                >
+                  Add
+                </Button>
+                <Button
+                  @click="
+                    () => {
+                      console.log(getInput(form));
+                      console.log(getDeepErrors(form));
+                      submitForm();
+                    }
+                  "
+                >
+                  Save
+                </Button>
               </div>
             </div>
           </Form>
@@ -190,7 +253,10 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
         <DialogHeader>
           <DialogTitle>Add date</DialogTitle>
         </DialogHeader>
-        <CreateDateForm @submit="handleAddDate" />
+        <CreateDateForm
+          :min-date="toCalendarDateString(playerRegsEndTime.input) || today('UTC').toString()"
+          @submit="handleAddDate"
+        />
       </DialogContent>
     </div>
   </Dialog>

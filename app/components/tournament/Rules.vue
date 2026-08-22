@@ -8,6 +8,6 @@ const { data: rules } = useFetch(`/api/tournaments/${props.slug}/rules`, {
 
 <template>
   <div class="prose dark:prose-invert max-w-none">
-    <Comark v-if="rules" :markdown="rules" />
+    <Markdown v-if="rules" :value="rules" />
   </div>
 </template>

@@ -1,54 +1,70 @@
-import { createInsertSchema, createSelectSchema } from "drizzle-orm/valibot";
+import { createInsertSchema } from "drizzle-orm/valibot";
 import * as v from "valibot";
 import { tournamentDates } from "~~/server/database/schema";
+import { parseUTCDate, parseUTCDateTime } from "~~/shared/utils/date";
+
+const dateTimeSchema = () => v.pipe(v.string(), v.isoTimestamp("Invalid date and time"));
+
+const calendarDateSchema = (message: string) =>
+  v.pipe(v.string(message), v.nonEmpty(message), v.isoDate("Invalid date"));
 
 const dateSchema = v.object({
-  start: v.date(),
-  end: v.date(),
+  start: v.nullish(dateTimeSchema()),
+  end: v.nullish(dateTimeSchema()),
 });
+
+const createSchema = createInsertSchema(tournamentDates, {
+  label: v.pipe(
+    v.string("Label required"),
+    v.minLength(2, "Label must be at least 2 characters long."),
+  ),
+  type: (schema) => v.pipe(schema, v.nonEmpty("Date type is required")),
+});
+
+const tournamentDateFields = {
+  ...v.pick(createSchema, ["label", "type"]).entries,
+  startDate: calendarDateSchema("Start date required"),
+  endDate: calendarDateSchema("End date required"),
+};
+
+export const tournamentDateCreateSchema = v.pipe(
+  v.object(tournamentDateFields),
+  v.check(
+    (input) => parseUTCDate(input.startDate).compare(parseUTCDate(input.endDate)) <= 0,
+    "Start date must be before end date.",
+  ),
+);
+export type TournamentDateCreate = v.InferOutput<typeof tournamentDateCreateSchema>;
 
 export const tournamentDatesSchema = v.object({
   playerRegs: v.nullish(dateSchema),
   staffRegs: v.nullish(dateSchema),
-  dates: v.array(
-    v.pick(createSelectSchema(tournamentDates), ["id", "type", "label", "startDate", "endDate"]),
+  dates: v.optional(
+    v.array(
+      v.object({
+        id: v.nullish(v.number()),
+        ...tournamentDateFields,
+      }),
+    ),
   ),
 });
 export type TournamentDates = v.InferOutput<typeof tournamentDatesSchema>;
 
-export const tournamentDateCreateSchema = v.pipe(
-  v.object(
-    v.pick(
-      createInsertSchema(tournamentDates, {
-        startDate: v.pipe(v.string("Start date required"), v.toDate("Invalid date")),
-        endDate: v.pipe(v.string("End date required"), v.toDate("Invalid date")),
-        label: v.pipe(
-          v.string("Label required"),
-          v.minLength(2, "Label must be at least 2 characters long."),
-        ),
-        type: (schema) => v.pipe(schema, v.nonEmpty("Date type is required")),
-      }),
-      ["label", "type", "startDate", "endDate"],
-    ).entries,
-  ),
-  v.check((input) => {
-    console.log(input);
-    return new Date(input.startDate) <= new Date(input.endDate);
-  }, "Start date must be before end date."),
-);
-export type TournamentDateCreate = v.InferOutput<typeof tournamentDateCreateSchema>;
+const isValidDateRange = (start: string | null | undefined, end: string | null | undefined) => {
+  if (start == null || end == null) return true;
+  return parseUTCDateTime(start).compare(parseUTCDateTime(end)) <= 0;
+};
 
 export const tournamentDatesFormSchema = v.pipe(
   tournamentDatesSchema,
-  v.check((input) => {
-    console.log(input);
-
-    if (input.playerRegs) {
-      return input.playerRegs.start <= input.playerRegs.end;
-    }
-
-    return true;
-  }, "Player registration dates must be valid."),
+  v.check(
+    (input) => isValidDateRange(input.playerRegs?.start, input.playerRegs?.end),
+    "Player registration dates must be valid.",
+  ),
+  v.check(
+    (input) => isValidDateRange(input.staffRegs?.start, input.staffRegs?.end),
+    "Staff registration dates must be valid.",
+  ),
 );
 export type TournamentDatesForm = v.InferOutput<typeof tournamentDatesFormSchema>;
 

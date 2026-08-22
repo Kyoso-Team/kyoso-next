@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVModel } from "@vueuse/core";
-import { computed, type HTMLAttributes } from "vue";
+import { computed, ref, type HTMLAttributes } from "vue";
 
 import { cn } from "@/lib/utils";
 
@@ -25,10 +25,19 @@ const inputModelValue = computed({
     inner.value = value === "" ? null : value;
   },
 });
+
+const inputRef = ref<HTMLInputElement | null>(null);
+
+defineExpose({
+  focus: () => inputRef.value?.focus(),
+  blur: () => inputRef.value?.blur(),
+  select: () => inputRef.value?.select(),
+});
 </script>
 
 <template>
   <input
+    ref="inputRef"
     v-model="inputModelValue"
     data-slot="input"
     :class="

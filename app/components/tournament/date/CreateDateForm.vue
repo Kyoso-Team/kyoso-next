@@ -7,6 +7,10 @@ import {
 
 import { isInvalid } from "~/components/ui/field/utils";
 
+const props = defineProps<{
+  minDate: string;
+}>();
+
 const emits = defineEmits<{
   submit: [values: TournamentDateCreate];
 }>();
@@ -74,6 +78,7 @@ const submit: SubmitHandler<typeof tournamentDateCreateSchema> = async (values) 
             v-model="field.input"
             v-bind="field.props"
             :aria-invalid="isInvalid(field)"
+            :min="minDate"
           />
           <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
         </Field>
