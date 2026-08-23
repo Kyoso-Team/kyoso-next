@@ -50,8 +50,8 @@ export default defineTournamentAccessHandler(async (_event, { tournament }) => {
   const dates = {
     dates: result.tournamentDates.map((date) => ({
       ...date,
-      startDate: date.startDate.toISOString().split("T")[0],
-      endDate: date.endDate.toISOString().split("T")[0],
+      start: date.startDate.toISOString().split("T")[0],
+      end: date.endDate.toISOString().split("T")[0],
     })),
     playerRegs: {
       start: result.playerRegistrationStart,

@@ -5,7 +5,7 @@ import { buildUrl, cn } from "~/lib/utils";
 
 const route = useRoute("tournaments-slug");
 
-const { data: session } = await useSession();
+const { data: session } = useSession();
 
 const { error: tournamentError } = useTournament();
 

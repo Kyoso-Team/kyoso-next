@@ -2,16 +2,15 @@ import { useRoute } from "vue-router";
 
 import { tournamentBySlugQuery } from "~/queries/tournament";
 
-export const useTournament = defineQuery(() => {
-  const slug = useRoute("tournaments-slug").params.slug;
+export const useTournament = () => {
+  const route = useRoute("tournaments-slug");
 
-  const { state: tournament, ...rest } = useQuery({
-    ...tournamentBySlugQuery({ slug }),
-    enabled: !!slug,
-  });
+  const { state: tournament, ...rest } = useQuery(() =>
+    tournamentBySlugQuery({ slug: route.params.slug }),
+  );
 
   return {
     tournament,
     ...rest,
   };
-});
+};

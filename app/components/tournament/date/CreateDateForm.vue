@@ -22,7 +22,7 @@ const form = useForm({
 });
 
 const startDate = useField(form, {
-  path: ["startDate"],
+  path: ["start"],
 });
 
 const submit: SubmitHandler<typeof tournamentDateCreateSchema> = async (values) => {
@@ -68,7 +68,7 @@ const submit: SubmitHandler<typeof tournamentDateCreateSchema> = async (values) 
           <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
         </Field>
       </FormField>
-      <FormField :of="form" :path="['startDate']" v-slot="field">
+      <FormField :of="form" :path="['start']" v-slot="field">
         <Field :data-invalid="isInvalid(field)">
           <FieldLabel :for="field.props.name">Start</FieldLabel>
           <Input
@@ -83,7 +83,7 @@ const submit: SubmitHandler<typeof tournamentDateCreateSchema> = async (values) 
           <FieldError v-if="isInvalid(field)" :errors="field.errors ?? []" />
         </Field>
       </FormField>
-      <FormField :of="form" :path="['endDate']" v-slot="field">
+      <FormField :of="form" :path="['end']" v-slot="field">
         <Field :data-invalid="isInvalid(field)">
           <FieldLabel :for="field.props.name">End</FieldLabel>
           <Input

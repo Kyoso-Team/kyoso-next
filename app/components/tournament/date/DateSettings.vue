@@ -197,12 +197,8 @@ const handleAddDate = (date: TournamentDateCreate) => {
                       </FormField>
                     </div>
                     <div class="text-muted-foreground text-sm">
-                      <FormField
-                        :of="form"
-                        :path="['dates', index, 'startDate']"
-                        v-slot="startDate"
-                      >
-                        <FormField :of="form" :path="['dates', index, 'endDate']" v-slot="endDate">
+                      <FormField :of="form" :path="['dates', index, 'start']" v-slot="startDate">
+                        <FormField :of="form" :path="['dates', index, 'end']" v-slot="endDate">
                           <span
                             >{{ formatCalendarDate(startDate.input) }} -
                             {{ formatCalendarDate(endDate.input) }}</span

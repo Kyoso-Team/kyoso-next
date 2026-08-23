@@ -9,53 +9,19 @@ const bannerImage = computed(
   () => tournament.value?.data?.banner ?? "/tournament-banner-full.jpeg",
 );
 
-const dates: { stage: string; start: string; end: string }[] = [
-  {
-    stage: "Registration",
-    start: "2026-06-01",
-    end: "2026-06-21T23:59:59Z",
-  },
-  {
-    stage: "Team Submission",
-    start: "2026-06-23",
-    end: "2026-06-29T23:59:59Z",
-  },
-  {
-    stage: "Qualifiers",
-    start: "2026-07-23",
-    end: "2026-07-29T23:59:59Z",
-  },
-  {
-    stage: "Group Stage",
-    start: "2026-07-20",
-    end: "2026-08-09T23:59:59Z",
-  },
-  {
-    stage: "Round of 16",
-    start: "2026-08-10",
-    end: "2026-08-16T23:59:59Z",
-  },
-  {
-    stage: "Quarterfinals",
-    start: "2026-08-17",
-    end: "2026-08-23T23:59:59Z",
-  },
-  {
-    stage: "Semifinals",
-    start: "2026-08-24",
-    end: "2026-08-30T23:59:59Z",
-  },
-  {
-    stage: "Finals",
-    start: "2026-08-31",
-    end: "2026-09-06T23:59:59Z",
-  },
-  {
-    stage: "Grand Finals",
-    start: "2026-09-07",
-    end: "2026-09-20T23:59:59Z",
-  },
-];
+const registrationDate = {
+  label: "Registration",
+  start: tournament.value?.data?.tournamentDates.playerRegs?.start,
+  end: tournament.value?.data?.tournamentDates.playerRegs?.end,
+};
+
+const tournamentDates = (tournament.value?.data?.tournamentDates?.dates ?? []).map((date) => ({
+  label: date.label,
+  start: date.start,
+  end: date.end,
+}));
+
+const dates = [registrationDate, ...tournamentDates];
 
 const getStageStatusStyles = (startDate: string, endDate: string) => {
   const now = dayjs();
@@ -126,16 +92,22 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
                 <ul class="flex w-full flex-col space-y-1">
                   <li
                     v-for="date in dates"
-                    :key="date.stage"
+                    :key="date.label"
                     :class="
                       cn(
                         'flex flex-col gap-0.5 rounded-md p-2 text-sm',
-                        getStageStatusStyles(date.start, date.end),
+                        getStageStatusStyles(
+                          date.start ?? new Date().toDateString(),
+                          date.end ?? new Date().toDateString(),
+                        ),
                       )
                     "
                   >
-                    <span class="font-semibold">{{ date.stage }}</span>
-                    <span>{{ date.start }} - {{ date.end }}</span>
+                    <span class="font-semibold">{{ date.label }}</span>
+                    <span
+                      >{{ dayjs(date.start).format("YYYY/MM/DD") }} -
+                      {{ dayjs(date.end).format("YYYY/MM/DD") }}</span
+                    >
                   </li>
                 </ul>
               </TabsContent>

@@ -112,7 +112,7 @@ const hasUnsavedChanges = computed(() => getDirtyInput(form));
     <h1 class="text-2xl">General Settings</h1>
     <Card class="bg-background mt-4 flex w-full max-w-5xl justify-center">
       <CardContent>
-        <Form :of="form" class="space-y-4" @submit="submitForm">
+        <Form :of="form" class="space-y-4" autocomplete="off" @submit="submitForm">
           <FieldGroup class="grid grid-cols-3 gap-3">
             <FormField :of="form" v-slot="field" :path="['name']">
               <Field :data-invalid="isInvalid(field)">

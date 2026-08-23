@@ -35,8 +35,8 @@ export default defineTournamentAccessHandler(async (event, { tournament }) => {
       tournamentId: tournament.id,
       label: date.label,
       type: date.type,
-      startDate: toDatabaseDate(date.startDate),
-      endDate: toDatabaseDate(date.endDate),
+      startDate: toDatabaseDate(date.start),
+      endDate: toDatabaseDate(date.end),
     };
   });
 

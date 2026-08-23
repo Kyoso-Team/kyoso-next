@@ -114,7 +114,12 @@ export const selectTournamentSchema = createSelectSchema(tournaments, {
 });
 
 export const tournamentSchema = v.object({
-  ...selectTournamentSchema.entries,
+  ...v.omit(selectTournamentSchema, [
+    "playerRegistrationStart",
+    "playerRegistrationEnd",
+    "staffRegistrationStart",
+    "staffRegistrationEnd",
+  ]).entries,
   tournamentDates: tournamentDatesSchema,
 });
 

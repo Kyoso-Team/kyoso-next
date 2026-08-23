@@ -2,7 +2,7 @@
 import { toast } from "vue-sonner";
 import type { UpdateTournament } from "~~/shared/validation/tournaments";
 
-const route = useRoute("tournaments-slug-settings");
+const route = useRoute("tournaments-slug");
 const { data: tournament, refresh } = useTournament();
 
 const { mutate: updateTournament } = useMutation({
