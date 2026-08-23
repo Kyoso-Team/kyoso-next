@@ -23,6 +23,14 @@ const items = [
     icon: "fa7-solid:cog",
   },
   {
+    href: `/tournaments/${route.params.slug}/players`,
+    label: "Players",
+  },
+  {
+    href: `/tournaments/${route.params.slug}/stages`,
+    label: "Stages",
+  },
+  {
     href: `/tournaments/${route.params.slug}/assets`,
     label: "Assets",
     icon: "fa7-solid:images",
@@ -35,83 +43,74 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
 <template>
   <div class="flex size-full flex-auto overflow-hidden">
     <SidebarProvider
-      :open="isSettingsPage"
+      :open="true"
       :style="{
-        '--sidebar-width': '200px',
+        '--sidebar-width': '150px',
       }"
     >
       <Popover>
-        <Sidebar
-          class="overflow-hidden *:data-[sidebar=sidebar]:flex-row"
-          variant="floating"
-          collapsible="icon"
-        >
-          <Sidebar
-            collapsible="none"
-            :class="[
-              'w-[calc(var(--sidebar-width-icon)+1px)]! rounded-lg border-r',
-              isSettingsPage ? 'rounded-tr-none rounded-br-none' : '',
-            ]"
-          >
-            <SidebarContent>
-              <SidebarGroup>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton size="sm" as-child tooltip="Home">
-                      <NuxtLink
-                        :href="{ name: 'tournaments-slug', params: { slug: route.params.slug } }"
-                      >
-                        <Icon name="fa7-solid:house" size="18" class="shrink-0" />
-                        <span>Home</span>
-                      </NuxtLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroup>
-              <SidebarSeparator />
-              <SidebarGroup>
-                <SidebarMenu>
-                  <SidebarMenuItem v-for="item in items" :key="item.href">
-                    <SidebarMenuButton
-                      size="sm"
-                      as-child
-                      :tooltip="item.label"
-                      :is-active="route.path.includes(item.label.toLowerCase())"
-                    >
-                      <NuxtLink :to="item.href">
-                        <Icon :name="item.icon" size="18" class="shrink-0" />
-                        <span>{{ item.label }}</span>
-                      </NuxtLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroup>
-            </SidebarContent>
-            <SidebarFooter>
+        <Sidebar class="overflow-hidden" variant="floating" collapsible="icon">
+          <SidebarContent>
+            <SidebarGroup>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton size="sm" as-child tooltip="Back to dashboard">
-                    <NuxtLink to="/dashboard">
-                      <Icon name="lucide:arrow-left" size="18" class="shrink-0" />
-                      <span>Back</span>
+                  <SidebarMenuButton size="sm" as-child tooltip="Home">
+                    <NuxtLink
+                      :href="{ name: 'tournaments-slug', params: { slug: route.params.slug } }"
+                    >
+                      <Icon name="fa7-solid:house" size="18" class="shrink-0" />
+                      <span>Home</span>
                     </NuxtLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
-              <div class="flex items-center gap-2">
-                <div v-if="session" class="flex items-center">
-                  <PopoverTrigger>
-                    <Avatar class="rounded-md transition-transform hover:scale-105">
+            </SidebarGroup>
+            <SidebarSeparator />
+            <SidebarGroup>
+              <SidebarMenu>
+                <SidebarMenuItem v-for="item in items" :key="item.href">
+                  <SidebarMenuButton
+                    size="sm"
+                    as-child
+                    :tooltip="item.label"
+                    :is-active="route.path.includes(item.label.toLowerCase())"
+                  >
+                    <NuxtLink :to="item.href">
+                      <Icon :name="item.icon ?? 'fa7-solid:question'" size="18" class="shrink-0" />
+                      <span>{{ item.label }}</span>
+                    </NuxtLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton size="sm" as-child tooltip="Back to dashboard">
+                  <NuxtLink to="/dashboard">
+                    <Icon name="lucide:arrow-left" size="18" class="shrink-0" />
+                    <span>Back</span>
+                  </NuxtLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+            <div class="flex justify-start gap-2">
+              <div v-if="session" class="w-full">
+                <PopoverTrigger class="w-full">
+                  <Button variant="ghost" class="flex w-full justify-start pl-0.5">
+                    <Avatar class="rounded-md">
                       <AvatarImage :src="buildUrl.userAvatar(session.user.osu.osuId)" />
                     </Avatar>
-                  </PopoverTrigger>
-                </div>
+                    <span class="text-xs">{{ session.user.osu.username }}</span>
+                  </Button>
+                </PopoverTrigger>
               </div>
-            </SidebarFooter>
+            </div>
             <ProfileMenu side="right" />
-          </Sidebar>
-          <TournamentSettingsSidebar v-if="isSettingsPage" />
+          </SidebarFooter>
         </Sidebar>
+        <!-- <TournamentSettingsSidebar v-if="isSettingsPage" /> -->
       </Popover>
       <SidebarInset class="h-svh p-2">
         <Card
