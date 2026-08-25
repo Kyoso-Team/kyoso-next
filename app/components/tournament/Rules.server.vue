@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { tournamentRulesBySlugQuery } from "~~/app/queries/tournament";
+
 const props = defineProps<{ slug: string }>();
 
-const { data: rules } = useFetch(`/api/tournaments/${props.slug}/rules`, {
-  key: computed(() => `tournament-${props.slug}-rules`),
-});
+const { data: rules } = useQuery(() => tournamentRulesBySlugQuery({ slug: props.slug }));
 </script>
 
 <template>
