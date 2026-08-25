@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// TODO: revisit validation
+
 import { useForm, Form, Field as FormField, type SubmitHandler, useField } from "@formisch/vue";
 import {
   tournamentDateCreateSchema,
@@ -54,7 +56,7 @@ const submit: SubmitHandler<typeof tournamentDateCreateSchema> = async (values) 
         <Field :data-invalid="isInvalid(field)">
           <FieldLabel :for="field.props.name">Type</FieldLabel>
           <Select :id="field.props.name" v-model="field.input" v-bind="field.props">
-            <SelectTrigger :id="field.props.name">
+            <SelectTrigger :aria-invalid="isInvalid(field)" :id="field.props.name">
               <SelectValue placeholder="---" />
             </SelectTrigger>
             <SelectContent>

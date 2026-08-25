@@ -21,15 +21,16 @@ const createSchema = createInsertSchema(tournamentDates, {
   type: (schema) => v.pipe(schema, v.nonEmpty("Date type is required")),
 });
 
-const tournamentDateFields = {
+const tournamentDateFields = v.object({
   ...v.pick(createSchema, ["label", "type"]).entries,
   start: calendarDateSchema("Start date required"),
   end: calendarDateSchema("End date required"),
-};
+});
 
 export const tournamentDateCreateSchema = v.pipe(
-  v.object(tournamentDateFields),
-  v.check(
+  tournamentDateFields,
+  v.partialCheck(
+    [["start"], ["end"]],
     (input) => parseUTCDate(input.start).compare(parseUTCDate(input.end)) <= 0,
     "Start date must be before end date.",
   ),
@@ -43,7 +44,7 @@ export const tournamentDatesSchema = v.object({
     v.array(
       v.object({
         id: v.nullish(v.number()),
-        ...tournamentDateFields,
+        ...tournamentDateFields.entries,
       }),
     ),
   ),
