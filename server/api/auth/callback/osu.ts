@@ -98,7 +98,7 @@ export default defineEventHandler(async (event) => {
     return await sendRedirect(event, "/", 302);
   }
 
-  const newUser = await db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const newCountry = await tx
       .insert(countries)
       .values({
@@ -164,7 +164,7 @@ export default defineEventHandler(async (event) => {
         badgeId: dbBadges.find(
           ({ imgFileName }) => (badge.image_url.split("/").at(-1) || "") === imgFileName,
         )!.id,
-        osuId: newUser.id,
+        userId: newUser.id,
       }),
     );
 
@@ -176,7 +176,7 @@ export default defineEventHandler(async (event) => {
   });
 
   const session = await createSession({
-    id: newUser.id,
+    id: result.id,
   });
 
   setCookie(event, COOKIE_NAME, session.token, {

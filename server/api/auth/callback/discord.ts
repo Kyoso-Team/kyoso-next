@@ -7,13 +7,6 @@ import { redisStateKey } from "~~/server/utils/oauth";
 import { oauthCallbackQuerySchema } from "~~/server/utils/validation/common";
 
 export default defineProtectedEventHandler(async (event, { session }) => {
-  if (session.user.discord) {
-    throw createError({
-      status: 400,
-      message: "User already has a discord account",
-    });
-  }
-
   const { code, state } = await getValidatedQuery(event, (query) => {
     const parse = v.safeParse(oauthCallbackQuerySchema, query);
 
@@ -67,5 +60,5 @@ export default defineProtectedEventHandler(async (event, { session }) => {
     .returning(pick(discordUsers, { id: true, username: true }))
     .then((user) => user[0]!);
 
-  return await sendRedirect(event, "/", 302);
+  return await sendRedirect(event, "/profile", 302);
 });
