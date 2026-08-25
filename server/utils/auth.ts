@@ -5,13 +5,7 @@ import { eq } from "drizzle-orm";
 import type { H3Event } from "h3";
 import { db } from "~~/server/database/client";
 import type { DiscordUserSelect } from "~~/server/database/schema";
-import {
-  sessions,
-  type SessionSelect,
-  users,
-  type UserSelect,
-  discordUsers,
-} from "~~/server/database/schema";
+import { sessions, type SessionSelect, type UserSelect } from "~~/server/database/schema";
 import { COOKIE_NAME } from "~~/shared/constants";
 
 export type SessionWithToken = SessionSelect & { token: string };
@@ -63,20 +57,42 @@ export async function validateSessionToken(
   const [sessionId, sessionSecret] = token.split(".");
   if (!sessionId || !sessionSecret) return null;
 
-  const databaseSession = await db
-    .select({ user: users, session: sessions, discordUser: discordUsers })
-    .from(sessions)
-    .innerJoin(users, eq(sessions.userId, users.id))
-    .leftJoin(discordUsers, eq(sessions.userId, discordUsers.userId))
-    .where(eq(sessions.id, sessionId))
-    .limit(1)
-    .then((rows) => rows[0]);
+  const databaseSessionA = await db.query.sessions.findFirst({
+    where: {
+      id: sessionId,
+    },
+    columns: {
+      id: true,
+      secretHash: true,
+      lastVerifiedAt: true,
+      createdAt: true,
+    },
+    with: {
+      user: {
+        columns: {
+          id: true,
+          username: true,
+          osuId: true,
+          isAdmin: true,
+        },
+        with: {
+          country: true,
+          discord: {
+            columns: {
+              username: true,
+              discordId: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
-  if (!databaseSession) {
+  if (!databaseSessionA) {
     return null;
   }
 
-  const { session, user, discordUser } = databaseSession;
+  const { user, ...session } = databaseSessionA;
 
   const secretHash = new TextEncoder().encode(sessionSecret);
   const secretHashBuffer = await crypto.subtle.digest("SHA-256", secretHash);
@@ -112,10 +128,12 @@ export async function validateSessionToken(
       osu: {
         osuId: user.osuId,
         username: user.username,
+        countryCode: user.country.code,
+        country: user.country.name,
       },
       discord:
-        discordUser !== null
-          ? { discordId: discordUser.discordId, username: discordUser.username }
+        user.discord !== null
+          ? { discordId: user.discord.discordId, username: user.discord.username }
           : null,
     },
   };
@@ -169,7 +187,9 @@ export const getCookieSession = async (event: H3Event): Promise<SessionValidatio
 export type SessionPayload = {
   session: Pick<SessionSelect, "id">;
   user: Pick<UserSelect, "id" | "isAdmin"> & {
-    osu: Pick<UserSelect, "osuId" | "username">;
+    osu: Pick<UserSelect, "osuId" | "username" | "countryCode"> & {
+      country: string;
+    };
     discord: Pick<DiscordUserSelect, "discordId" | "username"> | null;
   };
 };

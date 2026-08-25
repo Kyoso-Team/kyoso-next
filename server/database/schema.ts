@@ -79,7 +79,7 @@ export const badges = snakeCase.table(
 export const userAwardedBadges = snakeCase.table(
   "user_badge",
   (t) => ({
-    osuId: t
+    userId: t
       .integer()
       .notNull()
       .references(() => users.id),
@@ -89,7 +89,7 @@ export const userAwardedBadges = snakeCase.table(
       .references(() => badges.id),
     awardedAt: timestamp("awarded_at", timestampConfig).notNull(),
   }),
-  (t) => [primaryKey({ columns: [t.osuId, t.badgeId] }), index().on(t.osuId)],
+  (t) => [primaryKey({ columns: [t.userId, t.badgeId] }), index().on(t.userId)],
 );
 
 export const sessions = snakeCase.table("session", (table) => ({
