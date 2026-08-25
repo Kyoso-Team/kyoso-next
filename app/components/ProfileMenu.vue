@@ -13,7 +13,9 @@ const { side = "bottom" } = defineProps<{
     :sideOffset="15"
     class="flex w-60 flex-col items-center justify-center border-none p-1.25"
   >
-    <Button type="button" variant="ghost" class="w-full justify-start">Profile</Button>
+    <NuxtLink to="/profile" class="w-full">
+      <Button type="button" class="w-full justify-start" variant="ghost">Profile</Button>
+    </NuxtLink>
     <Button as="a" href="/api/auth/logout" variant="ghost" class="w-full justify-start"
       >Log out</Button
     >

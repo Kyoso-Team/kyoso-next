@@ -45,7 +45,7 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
     <SidebarProvider
       :open="true"
       :style="{
-        '--sidebar-width': '150px',
+        '--sidebar-width': '175px',
       }"
     >
       <Popover>

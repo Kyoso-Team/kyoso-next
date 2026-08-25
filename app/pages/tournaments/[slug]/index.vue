@@ -3,7 +3,9 @@ import dayjs from "dayjs";
 
 import { cn } from "~/lib/utils";
 
-const { tournament } = useTournament();
+const { tournament, refresh } = useTournament();
+
+await refresh();
 
 const bannerImage = computed(
   () => tournament.value?.data?.banner ?? "/tournament-banner-full.jpeg",
