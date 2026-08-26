@@ -10,6 +10,7 @@ export default defineProtectedEventHandler(async (_, { session }) => {
         name: true,
         slug: true,
         banner: true,
+        logo: true,
       }),
     })
     .from(tournaments)
@@ -24,5 +25,9 @@ export default defineProtectedEventHandler(async (_, { session }) => {
       or(eq(tournaments.hostUserId, session.user.id), eq(tournamentAccess.userId, session.user.id)),
     );
 
-  return res.map((t) => ({ ...t, banner: t.banner ? getAssetUrl(t.banner.fileId) : null }));
+  return res.map((t) => ({
+    ...t,
+    banner: t.banner ? getAssetUrl(t.banner.fileId) : null,
+    logo: t.logo ? getAssetUrl(t.logo.fileId) : null,
+  }));
 });

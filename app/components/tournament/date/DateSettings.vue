@@ -63,7 +63,6 @@ const { mutate: updateDates } = useMutation({
 });
 
 const submitForm = handleSubmit(form, async (values) => {
-  console.log(values);
   const dirty = pickDirty(form, { from: values });
   if (dirty) {
     updateDates(dirty as UpdateTournamentDates);

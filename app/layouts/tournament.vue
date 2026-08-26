@@ -54,7 +54,12 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
             <SidebarGroup>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton size="sm" as-child tooltip="Home">
+                  <SidebarMenuButton
+                    size="sm"
+                    as-child
+                    tooltip="Home"
+                    :is-active="route.name === 'tournaments-slug'"
+                  >
                     <NuxtLink
                       :href="{ name: 'tournaments-slug', params: { slug: route.params.slug } }"
                     >
@@ -90,7 +95,7 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
                 <SidebarMenuButton size="sm" as-child tooltip="Back to dashboard">
                   <NuxtLink to="/dashboard">
                     <Icon name="lucide:arrow-left" size="18" class="shrink-0" />
-                    <span>Back</span>
+                    <span>To dashboard</span>
                   </NuxtLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -7,7 +7,7 @@ const { tournament } = defineProps<{
   tournament: A;
 }>();
 
-const bannerImage = computed(() => tournament.banner ?? "/tournament-banner-thumb.jpeg");
+const bannerImage = computed(() => tournament.logo ?? "/tournament-banner-thumb.jpeg");
 </script>
 
 <template>
