@@ -23,6 +23,7 @@ export default defineTournamentAccessHandler(async (_event, { tournament }) => {
       playerRegistrationEnd: true,
       staffRegistrationStart: true,
       staffRegistrationEnd: true,
+      links: true,
       banner: true,
       logo: true,
     },

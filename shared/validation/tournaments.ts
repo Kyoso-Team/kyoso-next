@@ -4,6 +4,7 @@ import { tournaments } from "~~/server/database/schema";
 import { bwsSettingsSchema } from "~~/server/utils/validation/tournament";
 
 import { tournamentDatesSchema } from "./tournament-dates";
+import { tournamentLinkItemSchema } from "./tournament-links";
 
 export const createTournamentSchema = v.object({
   name: v.pipe(v.string(), v.minLength(2, "Tournament name must be at least 2 characters long.")),
@@ -19,6 +20,7 @@ const updateSchema = createUpdateSchema(tournaments, {
   slug: (schema) => v.pipe(schema, v.minLength(2, "Slug must be at least 2 characters long.")),
   acronym: (schema) =>
     v.pipe(schema, v.minLength(2, "Acronym must be at least 2 characters long.")),
+  links: v.optional(v.array(tournamentLinkItemSchema)),
   bwsSettings: v.optional(bwsSettingsSchema),
   lowerRankLimit: v.nullish(v.number("Lower rank limit is required")),
   upperRankLimit: v.nullish(v.number("Upper rank limit is required")),
@@ -108,6 +110,7 @@ export const updateTournamentSchema = v.pipe(
 export type UpdateTournament = v.InferOutput<typeof updateTournamentSchema>;
 
 export const selectTournamentSchema = createSelectSchema(tournaments, {
+  links: v.optional(v.array(tournamentLinkItemSchema), []),
   bwsSettings: v.nullable(bwsSettingsSchema),
   banner: v.nullable(v.pipe(v.string(), v.url())),
   logo: v.nullable(v.pipe(v.string(), v.url())),

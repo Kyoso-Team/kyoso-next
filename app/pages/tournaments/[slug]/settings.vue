@@ -24,6 +24,7 @@ const { mutate: updateTournament } = useMutation({
     <div class="flex w-3/4 flex-col gap-8 pb-4">
       <TournamentGeneralSettings @submit="updateTournament" :tournament="tournament" />
       <TournamentDateSettings :dates="tournament.tournamentDates" />
+      <TournamentLinksSettings :links="tournament.links" />
     </div>
     <TournamentRequirementsChecklist />
   </div>

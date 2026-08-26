@@ -33,7 +33,7 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
   }
 
   if (now.isAfter(endDate)) {
-    return "text-accent-foreground/80 line-through";
+    return "text-accent-foreground/80 line-through bg-primary/15";
   }
 
   return "bg-primary text-primary-foreground";
@@ -73,8 +73,8 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
       <Card class="size-full w-full lg:w-1/4">
         <CardContent class="flex max-h-full flex-col space-y-6">
           <div class="flex flex-col gap-2">
-            <Button class="h-11 w-full">Register as player</Button>
-            <Button class="h-11 w-full">Apply for staff</Button>
+            <Button class="h-10 w-full">Register as player</Button>
+            <Button class="h-10 w-full">Apply for staff</Button>
           </div>
           <div
             class="bg-accent text-accent-foreground flex min-h-0 flex-1 flex-col gap-3 overflow-hidden rounded-md p-3"
@@ -85,7 +85,7 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
                   <Icon name="fa7-solid:calendar" size="16" />
                   <span>Dates</span>
                 </TabsTrigger>
-                <TabsTrigger value="links" class="flex-1">
+                <TabsTrigger v-if="tournament.data.links.length > 0" value="links" class="flex-1">
                   <Icon name="fa7-solid:link" size="16" />
                   <span>Links</span>
                 </TabsTrigger>
@@ -112,6 +112,9 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
                     >
                   </li>
                 </ul>
+              </TabsContent>
+              <TabsContent value="links">
+                <TournamentLinks :links="tournament.data.links" />
               </TabsContent>
             </Tabs>
           </div>

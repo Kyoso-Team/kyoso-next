@@ -10,6 +10,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import type { BWSSettings } from "~~/server/utils/validation/tournament";
+import type { TournamentLink } from "~~/shared/validation/tournament-links";
 
 export type AssetMetadata = {
   fileId: string;
@@ -161,6 +162,7 @@ export const tournaments = snakeCase.table(
     playerRegistrationEnd: t.timestamp(timestampConfig),
     staffRegistrationStart: t.timestamp(timestampConfig),
     staffRegistrationEnd: t.timestamp(timestampConfig),
+    links: t.jsonb().$type<TournamentLink[]>().notNull().default([]),
     hostUserId: t
       .integer()
       .notNull()

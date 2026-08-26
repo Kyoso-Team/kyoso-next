@@ -44,7 +44,8 @@ const submitForm: SubmitHandler<typeof updateTournamentSchema> = (values) => {
   if (dirty) {
     emit("submit", {
       ...dirty,
-      bwsSettings: values.bwsSettings,
+      links: undefined,
+      bwsSettings: dirty.bwsSettings ? values.bwsSettings : undefined,
     });
     reset(form, {
       initialInput: values,
