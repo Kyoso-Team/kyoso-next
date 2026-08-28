@@ -1,7 +1,7 @@
 import { useLogger } from "evlog/nitro";
 import type { EventHandlerRequest, H3Event } from "h3";
 
-type ProtectedEventHandler<T extends EventHandlerRequest, D> = (
+export type ProtectedEventHandler<T extends EventHandlerRequest, D> = (
   event: H3Event<T>,
   data: {
     session: SessionPayload;

@@ -8,6 +8,10 @@ export const relations = defineRelations(schema, (r) => ({
       from: r.tournaments.id,
       to: r.tournamentDates.tournamentId,
     }),
+    staff: r.many.users({
+      from: r.tournaments.id.through(r.tournamentAccess.tournamentId),
+      to: r.users.id.through(r.tournamentAccess.userId),
+    }),
   },
   sessions: {
     user: r.one.users({
@@ -30,11 +34,28 @@ export const relations = defineRelations(schema, (r) => ({
       from: r.users.id.through(r.userAwardedBadges.userId),
       to: r.badges.id.through(r.userAwardedBadges.badgeId),
     }),
+    userAwardedBadges: r.many.userAwardedBadges({
+      from: r.users.id,
+      to: r.userAwardedBadges.userId,
+    }),
+    ranks: r.one.userRanks({
+      from: r.users.id,
+      to: r.userRanks.userId,
+      optional: false,
+    }),
   },
   userAwardedBadges: {
-    badges: r.many.badges({
+    badge: r.one.badges({
       from: r.userAwardedBadges.badgeId,
       to: r.badges.id,
+      optional: false,
+    }),
+  },
+  tournamentParticipants: {
+    participant: r.one.users({
+      from: r.tournamentParticipants.userId,
+      to: r.users.id,
+      optional: false,
     }),
   },
 }));

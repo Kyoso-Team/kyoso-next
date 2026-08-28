@@ -3,7 +3,7 @@ import { API } from "osu-api-v2-js";
 import { isProduction } from "std-env";
 import * as v from "valibot";
 import { db } from "~~/server/database/client";
-import { badges, countries, users, userAwardedBadges } from "~~/server/database/schema";
+import { badges, countries, users, userAwardedBadges, userRanks } from "~~/server/database/schema";
 import { pick } from "~~/server/utils/database";
 import { redisStateKey } from "~~/server/utils/oauth";
 import { oauthCallbackQuerySchema } from "~~/server/utils/validation/common";
@@ -64,28 +64,35 @@ export default defineEventHandler(async (event) => {
     })
     .where(eq(users.osuId, osuUser.id))
     .returning({
+      ...pick(users, {
+        id: true,
+      }),
       exists: sql<boolean>`1`.as("exists"),
     })
-    .then((user) => !!user[0]?.exists);
+    .then((user) => user[0]);
 
-  if (existingUser) {
-    const user = await db
-      .select({
-        ...pick(users, {
-          id: true,
-          isAdmin: true,
-          osuId: true,
-          username: true,
-        }),
+  if (existingUser?.exists) {
+    await db
+      .insert(userRanks)
+      .values({
+        userId: existingUser.id,
+        osuRank: osuUser.statistics_rulesets.osu?.global_rank,
+        taikoRank: osuUser.statistics_rulesets.taiko?.global_rank,
+        maniaRank: osuUser.statistics_rulesets.mania?.global_rank,
+        fruitsRank: osuUser.statistics_rulesets.fruits?.global_rank,
       })
-      .from(users)
-      .where(eq(users.osuId, osuUser.id))
-      .limit(1)
-      // since we checked that user exists, we know that record will be there no matter what
-      .then((user) => user[0]!);
+      .onConflictDoUpdate({
+        target: [userRanks.userId],
+        set: {
+          osuRank: osuUser.statistics_rulesets.osu?.global_rank,
+          taikoRank: osuUser.statistics_rulesets.taiko?.global_rank,
+          maniaRank: osuUser.statistics_rulesets.mania?.global_rank,
+          fruitsRank: osuUser.statistics_rulesets.fruits?.global_rank,
+        },
+      });
 
     const session = await createSession({
-      id: user.id,
+      id: existingUser.id,
     });
 
     setCookie(event, COOKIE_NAME, session.token, {
@@ -128,6 +135,25 @@ export default defineEventHandler(async (event) => {
       })
       .returning(pick(users, { id: true }))
       .then((result) => result[0]!);
+
+    await tx
+      .insert(userRanks)
+      .values({
+        userId: newUser.id,
+        osuRank: osuUser.statistics_rulesets.osu?.global_rank,
+        taikoRank: osuUser.statistics_rulesets.taiko?.global_rank,
+        maniaRank: osuUser.statistics_rulesets.mania?.global_rank,
+        fruitsRank: osuUser.statistics_rulesets.fruits?.global_rank,
+      })
+      .onConflictDoUpdate({
+        target: [userRanks.userId],
+        set: {
+          osuRank: osuUser.statistics_rulesets.osu?.global_rank,
+          taikoRank: osuUser.statistics_rulesets.taiko?.global_rank,
+          maniaRank: osuUser.statistics_rulesets.mania?.global_rank,
+          fruitsRank: osuUser.statistics_rulesets.fruits?.global_rank,
+        },
+      });
 
     const badgesToInsert = osuUser.badges.map<typeof badges.$inferInsert>((badge) => {
       return {

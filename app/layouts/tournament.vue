@@ -23,8 +23,9 @@ const items = [
     icon: "fa7-solid:cog",
   },
   {
-    href: `/tournaments/${route.params.slug}/players`,
-    label: "Players",
+    href: `/tournaments/${route.params.slug}/participants`,
+    label: "Participants",
+    icon: "fa7-solid:users",
   },
   {
     href: `/tournaments/${route.params.slug}/stages`,

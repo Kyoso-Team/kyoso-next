@@ -2,6 +2,7 @@ import { isNotNull, isNull, lt, or } from "drizzle-orm";
 import type { PgTimestampConfig } from "drizzle-orm/pg-core";
 import {
   check,
+  foreignKey,
   index,
   pgEnum,
   primaryKey,
@@ -93,6 +94,19 @@ export const userAwardedBadges = snakeCase.table(
   (t) => [primaryKey({ columns: [t.userId, t.badgeId] }), index().on(t.userId)],
 );
 
+export const userRanks = snakeCase.table("user_rank", (t) => ({
+  userId: t
+    .integer()
+    .primaryKey()
+    .notNull()
+    .references(() => users.id),
+  osuRank: t.integer(),
+  taikoRank: t.integer(),
+  maniaRank: t.integer(),
+  fruitsRank: t.integer(),
+  lastUpdatedAt: t.timestamp(timestampConfig).notNull().defaultNow(),
+}));
+
 export const sessions = snakeCase.table("session", (table) => ({
   id: table.text().primaryKey(),
   userId: table
@@ -182,9 +196,10 @@ export const tournaments = snakeCase.table(
   ],
 );
 
-export const tournamentAccess = snakeCase.table(
-  "tournament_access",
+export const tournamentParticipants = snakeCase.table(
+  "tournament_participant",
   (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
     tournamentId: t
       .integer()
       .notNull()
@@ -193,11 +208,61 @@ export const tournamentAccess = snakeCase.table(
       .integer()
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    roles: StaffRoles().array().notNull(),
+    osuId: t.integer().notNull(),
+    username: t.varchar().notNull(),
+    countryCode: t
+      .char({ length: 2 })
+      .notNull()
+      .references(() => countries.code),
+    tournamentTeamId: t.integer().references(() => tournamentTeams.id, { onDelete: "cascade" }),
+    osuRank: t.integer(),
+    eligibleBadgesAmount: t.integer(),
+    snapshotAt: t.timestamp(timestampConfig),
     ...timestampColumns(),
   }),
-  (t) => [primaryKey({ columns: [t.tournamentId, t.userId] })],
+  (t) => [
+    uniqueIndex("udx_tournament_participants_tournament_id_osu_id").on(t.tournamentId, t.osuId),
+    uniqueIndex("udx_tournament_participants_tournament_id_user_id").on(t.tournamentId, t.userId),
+    foreignKey({
+      columns: [t.tournamentId, t.tournamentTeamId],
+      foreignColumns: [tournamentTeams.id, tournamentTeams.tournamentId],
+    }),
+  ],
 );
+
+export const tournamentTeams = snakeCase.table(
+  "tournament_team",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    name: t.varchar().notNull(),
+    tournamentId: t
+      .integer()
+      .notNull()
+      .references(() => tournaments.id, { onDelete: "cascade" }),
+    avatar: t.jsonb().$type<AssetMetadata>(),
+    captainUserId: t
+      .integer()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  }),
+  (t) => [
+    uniqueIndex("udx_teams_tournament_id_team_name").on(t.tournamentId, t.name),
+    uniqueIndex("udx_tournament_team_id_tournament_id").on(t.id, t.tournamentId),
+  ],
+);
+
+export const tournamentAccess = snakeCase.table("tournament_access", (t) => ({
+  tournamentId: t
+    .integer()
+    .notNull()
+    .references(() => tournaments.id, { onDelete: "cascade" }),
+  userId: t
+    .integer()
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  roles: StaffRoles().array().notNull(),
+  ...timestampColumns(),
+}));
 
 export const tournamentDates = snakeCase.table(
   "tournament_date",
@@ -225,3 +290,5 @@ export type DiscordUserSelect = typeof discordUsers.$inferSelect;
 
 export type TournamentSelect = typeof tournaments.$inferSelect;
 export type TournamentInsert = typeof tournaments.$inferInsert;
+
+export type BadgeSelect = typeof badges.$inferSelect;

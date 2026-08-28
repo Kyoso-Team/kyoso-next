@@ -9,12 +9,12 @@ export default defineProtectedEventHandler(async (_, { session }) => {
       userId: session.user.id,
     },
     with: {
-      badges: true,
+      badge: true,
     },
   });
 
   return result.reduce<Badge[]>((acc, curr) => {
-    const badge = curr.badges[0];
+    const badge = curr.badge;
 
     if (!badge) return acc;
 

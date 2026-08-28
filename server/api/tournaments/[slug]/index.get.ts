@@ -1,6 +1,7 @@
 import { db } from "~~/server/database/client";
 import { defineTournamentAccessHandler } from "~~/server/utils/handlers/tournament-access.handler";
 import { getAssetUrl } from "~~/server/utils/s3";
+import { omit } from "~~/shared/utils/omit";
 
 export default defineTournamentAccessHandler(async (_event, { tournament }) => {
   const result = await db.query.tournaments.findFirst({

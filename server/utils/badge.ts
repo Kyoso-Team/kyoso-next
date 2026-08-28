@@ -24,6 +24,7 @@ const FILENAME_PATTERNS = [
   "twin.?trials",
   "vmc",
   "mapping-\\d",
+  "pooling-\\d",
   "mca[-_]",
   "mf\\d",
   "cc20\\d{2}",
@@ -65,14 +66,9 @@ export function isNonTournamentBadge(badge: {
   imgFileName: string;
   description: string | null;
 }): boolean {
-  if (filenameRegex.test(badge.imgFileName)) {
-    return true;
-  }
-  if (
-    badge.description &&
-    DESCRIPTION_PATTERNS.some((pattern) => pattern.test(badge.description!))
-  ) {
-    return true;
-  }
-  return false;
+  return (
+    filenameRegex.test(badge.imgFileName) ||
+    (!!badge.description &&
+      DESCRIPTION_PATTERNS.some((pattern) => pattern.test(badge.description!)))
+  );
 }

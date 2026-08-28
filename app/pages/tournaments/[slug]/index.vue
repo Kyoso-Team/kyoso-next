@@ -1,11 +1,29 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
+import { useRoute } from "vue-router";
 
 import { cn } from "~/lib/utils";
+import { REGISTRATIONS_QUERY_KEYS } from "~/queries/registrations";
+
+const slug = useRoute("tournaments-slug").params.slug;
 
 const { tournament, refresh } = useTournament();
-
 await refresh();
+
+const {
+  state: registerData,
+  isLoading,
+  refresh: registerRefresh,
+} = useQuery({
+  key: REGISTRATIONS_QUERY_KEYS.bySlug(slug),
+  query: () =>
+    $fetch(`/api/tournaments/${slug}/registration`, {
+      method: "GET",
+      headers: useRequestHeaders(["cookie"]),
+    }),
+  placeholderData: (prev) => prev,
+});
+await registerRefresh();
 
 const bannerImage = computed(
   () => tournament.value?.data?.banner ?? "/tournament-banner-full.jpeg",
@@ -73,9 +91,18 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
       <Card class="size-full w-full lg:w-1/4">
         <CardContent class="flex max-h-full flex-col space-y-6">
           <div class="flex flex-col gap-2">
-            <Button class="h-10 w-full">Register as player</Button>
-            <Button class="h-10 w-full">Apply for staff</Button>
+            <div v-if="isLoading" class="mx-auto flex justify-center">
+              <Spinner />
+            </div>
+            <template v-if="registerData.status === 'success'">
+              <TournamentRegisterPanel
+                :tournament="tournament.data"
+                :is-registered="!!registerData.data"
+              />
+              <Button class="h-10 w-full">Apply for staff</Button>
+            </template>
           </div>
+
           <div
             class="bg-accent text-accent-foreground flex min-h-0 flex-1 flex-col gap-3 overflow-hidden rounded-md p-3"
           >

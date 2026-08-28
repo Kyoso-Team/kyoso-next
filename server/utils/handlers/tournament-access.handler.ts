@@ -1,6 +1,6 @@
 import { and, eq, or, sql } from "drizzle-orm";
 import { useLogger } from "evlog";
-import type { H3Event } from "h3";
+import type { H3Event, EventHandlerRequest } from "h3";
 import { db } from "~~/server/database/client";
 import { tournamentAccess, tournaments } from "~~/server/database/schema";
 
@@ -22,7 +22,6 @@ export const validateTournamentAccess = async (session: SessionPayload, slug: st
           name: true,
         }),
       },
-      exists: sql<boolean>`exists (select 1 from ${tournaments} where ${eq(tournaments.slug, slug)})`,
       hasAccess: sql<boolean>`exists(select 1
                         from ${tournaments}
                                  left join ${tournamentAccess} on ${tournamentAccess.tournamentId} = ${tournaments.id}
