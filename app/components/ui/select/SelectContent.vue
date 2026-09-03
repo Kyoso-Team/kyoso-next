@@ -4,7 +4,7 @@ import type { SelectContentEmits, SelectContentProps } from "reka-ui";
 import { SelectContent, SelectPortal, SelectViewport, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 import { SelectScrollDownButton, SelectScrollUpButton } from ".";
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ProfileMenu from "~/components/ProfileMenu.vue";
 import { SidebarGroup } from "~/components/ui/sidebar";
-import { buildUrl, cn } from "~/lib/utils";
+import { buildUrl } from "~/lib/utils";
 
 const route = useRoute("tournaments-slug");
 

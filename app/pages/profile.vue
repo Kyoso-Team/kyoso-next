@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { buildUrl, cn } from "~/lib/utils";
+import { buildUrl } from "~/lib/utils";
 
 const { data: session } = useSession();
 const { data: badges } = useQuery({

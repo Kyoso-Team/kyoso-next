@@ -6,6 +6,14 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 5,
   },
+  imports: {
+    presets: [
+      {
+        from: "cn",
+        imports: ["cn"],
+      },
+    ],
+  },
   nitro: {
     preset: "bun",
   },

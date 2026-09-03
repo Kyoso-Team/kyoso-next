@@ -4,7 +4,7 @@ import { TooltipProvider } from "reka-ui";
 import type { HTMLAttributes, Ref } from "vue";
 import { computed, ref } from "vue";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 import {
   provideSidebarContext,

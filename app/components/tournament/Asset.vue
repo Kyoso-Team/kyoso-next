@@ -2,8 +2,6 @@
 import { capitalize } from "vue";
 import { toast } from "vue-sonner";
 
-import { cn } from "~/lib/utils";
-
 const props = defineProps<{
   img: string | null;
   type: "logo" | "banner";

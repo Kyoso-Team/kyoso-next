@@ -4,7 +4,7 @@ import type { SelectItemProps } from "reka-ui";
 import { SelectItem, SelectItemIndicator, SelectItemText, useForwardProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 const props = defineProps<SelectItemProps & { class?: HTMLAttributes["class"] }>();
 

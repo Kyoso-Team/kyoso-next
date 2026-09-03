@@ -10,7 +10,7 @@ import {
 } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 defineOptions({
   inheritAttrs: false,

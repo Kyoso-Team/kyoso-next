@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 import type { FieldVariants } from ".";
 import { fieldVariants } from ".";
