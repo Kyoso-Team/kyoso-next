@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 import { myRanksQuery } from "~~/app/queries/rank";
+import type { TournamentRegistration } from "~~/shared/validation/tournament-registration";
 import type { Tournament } from "~~/shared/validation/tournaments";
 
-import { cn } from "~/lib/utils";
 import { useTournamentRegistration } from "~/mutations/registrations";
 
 type PlayerRegsStatus =
@@ -15,9 +15,9 @@ type PlayerRegsStatus =
       status: "open" | "closed";
     };
 
-const { tournament, isRegistered } = defineProps<{
+const { tournament, registration } = defineProps<{
   tournament: Tournament;
-  isRegistered: boolean;
+  registration: TournamentRegistration | null;
 }>();
 
 const playerRegs = computed<PlayerRegsStatus>(() => {
@@ -46,6 +46,8 @@ const playerRegs = computed<PlayerRegsStatus>(() => {
   };
 });
 
+const { data: session } = useSession();
+
 const { data: ranks } = useQuery(() => myRanksQuery());
 
 const inRankRange = computed(() => {
@@ -70,7 +72,7 @@ watchEffect(() => {
 });
 
 const handleSignUp = async () => {
-  if (!inRankRange.value) {
+  if (!inRankRange.value && !warningModalOpened.value) {
     warningModalOpened.value = true;
     return;
   }
@@ -93,7 +95,7 @@ const agreedToRules = ref(false);
 
 <template>
   <div class="flex flex-col gap-2">
-    <template v-if="!isRegistered">
+    <template v-if="!registration">
       <span
         v-if="playerRegs.status === 'not-started'"
         class="text-muted-foreground text-center text-xs"
@@ -102,6 +104,7 @@ const agreedToRules = ref(false);
         <NuxtTime :datetime="playerRegs.date" relative />
       </span>
       <Button
+        v-if="tournament.type === 'solo'"
         @click="menuOpened = !menuOpened"
         :disabled="playerRegs.status !== 'open'"
         :class="cn('flex h-10 w-full gap-1', { 'rounded-b-none': menuOpened })"
@@ -110,6 +113,16 @@ const agreedToRules = ref(false);
         <span v-if="playerRegs.status === 'closed'" class="contents">closed</span>
         <Icon v-else-if="playerRegs.status === 'open'" name="fa7-solid:chevron-down" />
       </Button>
+      <NuxtLink
+        v-else
+        :to="{ name: 'tournaments-slug-register', params: { slug: tournament.slug } }"
+      >
+        <Button :disabled="playerRegs.status !== 'open'" :class="cn('flex h-10 w-full gap-1')">
+          Team registration
+          <span v-if="playerRegs.status === 'closed'" class="contents">closed</span>
+        </Button>
+      </NuxtLink>
+
       <div
         v-if="menuOpened"
         class="bg-sidebar -mt-2 flex max-h-50 w-full flex-col gap-4 rounded-md rounded-t-none p-3 text-xs"
@@ -153,19 +166,52 @@ const agreedToRules = ref(false);
       >
         <TournamentRegisterRankRow :tournament="tournament" />
 
-        <p class="text-muted-foreground text-center text-xs">
-          Your registration can be revoked until the end of
-          {{ tournament.type === "solo" ? "player" : "team" }} registration
-          <NuxtTime :datetime="regsEnd" relative />.
-        </p>
-        <Button
-          variant="destructive"
-          :disabled="isRevoking"
-          class="h-6 w-full text-xs"
-          @click="confirmModalOpened = true"
-        >
-          Revoke registration
-        </Button>
+        <template v-if="tournament.type === 'solo'">
+          <p class="text-muted-foreground text-center text-xs">
+            Your registration can be revoked until the end of player registration
+            <NuxtTime :datetime="regsEnd" relative />.
+          </p>
+          <Button
+            variant="destructive"
+            :disabled="isRevoking"
+            class="h-6 w-full text-xs"
+            @click="confirmModalOpened = true"
+          >
+            Revoke registration
+          </Button>
+        </template>
+        <template v-else-if="registration.team">
+          <div
+            v-if="registration.team.captainUserId === session!.user.id"
+            class="flex flex-col gap-2"
+          >
+            <p class="text-muted-foreground text-center text-xs">
+              You are the captain of the team
+              <span class="font-bold">{{ registration.team.name }}</span>
+            </p>
+            <div class="flex w-full gap-2">
+              <Button variant="outline" class="h-6 flex-1 text-xs"> Manage team </Button>
+              <Button
+                variant="destructive"
+                :disabled="isRevoking"
+                class="h-6 flex-1 text-xs"
+                @click="confirmModalOpened = true"
+              >
+                Revoke registration
+              </Button>
+            </div>
+          </div>
+          <div v-else class="text-muted-foreground flex w-full flex-col gap-1 text-center">
+            <p>
+              You are a member of the team
+              <span class="font-bold">{{ registration.team.name }}</span>
+            </p>
+            <p>
+              If you wish to change your team or revoke your registration, please contact the
+              captain or the tournament host/admins.
+            </p>
+          </div>
+        </template>
       </div>
     </template>
   </div>

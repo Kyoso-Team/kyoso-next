@@ -156,13 +156,15 @@ export default defineEventHandler(async (event) => {
       });
 
     const badgesToInsert = osuUser.badges.map<typeof badges.$inferInsert>((badge) => {
+      const imgFileName = badge.image_url.split("/").at(-1) ?? "";
+
       return {
-        imgFileName: badge.image_url.split("/").at(-1) ?? "",
+        imgFileName,
         description: badge.description,
         tournamentUrl: badge.url,
         isBwsEligible: !isNonTournamentBadge({
           description: badge.description,
-          imgFileName: badge.image_url.split("/").at(-1) ?? "",
+          imgFileName,
         }),
       };
     });
@@ -211,5 +213,5 @@ export default defineEventHandler(async (event) => {
     secure: isProduction,
     maxAge: 60 * 60 * 24 * 30,
   });
-  return await sendRedirect(event, "/", 302);
+  return sendRedirect(event, "/", 302);
 });

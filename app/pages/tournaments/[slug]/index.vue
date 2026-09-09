@@ -2,7 +2,6 @@
 import dayjs from "dayjs";
 import { useRoute } from "vue-router";
 
-import { cn } from "~/lib/utils";
 import { REGISTRATIONS_QUERY_KEYS } from "~/queries/registrations";
 
 const slug = useRoute("tournaments-slug").params.slug;
@@ -97,7 +96,7 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
             <template v-if="registerData.status === 'success'">
               <TournamentRegisterPanel
                 :tournament="tournament.data"
-                :is-registered="!!registerData.data"
+                :registration="registerData.data"
               />
               <Button class="h-10 w-full">Apply for staff</Button>
             </template>

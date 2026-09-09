@@ -217,7 +217,6 @@ export const tournamentParticipants = snakeCase.table(
     tournamentTeamId: t.integer().references(() => tournamentTeams.id, { onDelete: "cascade" }),
     osuRank: t.integer(),
     eligibleBadgesAmount: t.integer(),
-    snapshotAt: t.timestamp(timestampConfig),
     ...timestampColumns(),
   }),
   (t) => [

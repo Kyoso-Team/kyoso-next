@@ -51,11 +51,21 @@ export const relations = defineRelations(schema, (r) => ({
       optional: false,
     }),
   },
+  tournamentTeams: {
+    players: r.many.users({
+      from: r.tournamentTeams.id.through(r.tournamentParticipants.tournamentTeamId),
+      to: r.users.id.through(r.tournamentParticipants.userId),
+    }),
+  },
   tournamentParticipants: {
     participant: r.one.users({
       from: r.tournamentParticipants.userId,
       to: r.users.id,
       optional: false,
+    }),
+    team: r.one.tournamentTeams({
+      from: r.tournamentParticipants.tournamentTeamId,
+      to: r.tournamentTeams.id,
     }),
   },
 }));
