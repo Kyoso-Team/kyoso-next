@@ -250,18 +250,22 @@ export const tournamentTeams = snakeCase.table(
   ],
 );
 
-export const tournamentAccess = snakeCase.table("tournament_access", (t) => ({
-  tournamentId: t
-    .integer()
-    .notNull()
-    .references(() => tournaments.id, { onDelete: "cascade" }),
-  userId: t
-    .integer()
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  roles: StaffRoles().array().notNull(),
-  ...timestampColumns(),
-}));
+export const tournamentAccess = snakeCase.table(
+  "tournament_access",
+  (t) => ({
+    tournamentId: t
+      .integer()
+      .notNull()
+      .references(() => tournaments.id, { onDelete: "cascade" }),
+    userId: t
+      .integer()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    roles: StaffRoles().array().notNull(),
+    ...timestampColumns(),
+  }),
+  (t) => [primaryKey({ columns: [t.tournamentId, t.userId] })],
+);
 
 export const tournamentDates = snakeCase.table(
   "tournament_date",
@@ -281,6 +285,24 @@ export const tournamentDates = snakeCase.table(
     uniqueIndex("udx_tournament_id_tournament_date_label").on(t.label, t.tournamentId),
     index("idx_tournament_start_date").on(t.tournamentId, t.startDate),
   ],
+);
+
+export const tournamentStaffApplications = snakeCase.table(
+  "tournament_staff_application",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    tournamentId: t
+      .integer()
+      .notNull()
+      .references(() => tournaments.id, { onDelete: "cascade" }),
+    userId: t
+      .integer()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    roles: StaffRoles().array().notNull(),
+    notes: t.text(),
+  }),
+  (t) => [index("idx_tournament_staff_application_user_id").on(t.tournamentId, t.userId)],
 );
 
 export type UserSelect = typeof users.$inferSelect;

@@ -20,6 +20,6 @@ const getRules = defineCachedFunction(
   },
 );
 
-export default defineTournamentAccessHandler(async (_event, { tournament }) => {
+export default defineTournamentHandler(async (_event, { tournament }) => {
   return await getRules(tournament.slug);
 });

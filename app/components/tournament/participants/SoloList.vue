@@ -20,9 +20,13 @@ defineProps<{
         </Avatar>
         <div class="flex size-full flex-col text-xl">
           <div class="flex items-center gap-2">
-            <span>{{ participant.username }}</span>
-            <NuxtLink external :to="`https://osu.ppy.sh/u/${participant.osuId}`" target="_blank">
-              <OsuIcon />
+            <NuxtLink
+              class="hover:text-primary truncate transition-colors hover:underline"
+              external
+              :to="`https://osu.ppy.sh/u/${participant.osuId}`"
+              target="_blank"
+            >
+              <span>{{ participant.username }}</span>
             </NuxtLink>
           </div>
           <div

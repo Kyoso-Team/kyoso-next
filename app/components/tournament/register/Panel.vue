@@ -113,14 +113,15 @@ const agreedToRules = ref(false);
         <span v-if="playerRegs.status === 'closed'" class="contents">closed</span>
         <Icon v-else-if="playerRegs.status === 'open'" name="fa7-solid:chevron-down" />
       </Button>
+      <Button v-else-if="playerRegs.status !== 'open'" disabled class="flex h-10 w-full gap-1">
+        Team registration
+        <span v-if="playerRegs.status === 'closed'" class="contents">closed</span>
+      </Button>
       <NuxtLink
         v-else
         :to="{ name: 'tournaments-slug-register', params: { slug: tournament.slug } }"
       >
-        <Button :disabled="playerRegs.status !== 'open'" :class="cn('flex h-10 w-full gap-1')">
-          Team registration
-          <span v-if="playerRegs.status === 'closed'" class="contents">closed</span>
-        </Button>
+        <Button :class="cn('flex h-10 w-full gap-1')"> Team registration </Button>
       </NuxtLink>
 
       <div

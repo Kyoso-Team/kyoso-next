@@ -49,7 +49,9 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
     return "text-accent-foreground/80";
   }
 
-  if (now.isAfter(endDate)) {
+  const end = dayjs(endDate).set("hour", 23).set("minute", 59);
+
+  if (now.isAfter(end)) {
     return "text-accent-foreground/80 line-through bg-primary/15";
   }
 
@@ -98,7 +100,7 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
                 :tournament="tournament.data"
                 :registration="registerData.data"
               />
-              <Button class="h-10 w-full">Apply for staff</Button>
+              <TournamentStaffApplicationPanel />
             </template>
           </div>
 

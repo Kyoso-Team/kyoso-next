@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { kebabCase } from "scule";
+
 import ProfileMenu from "~/components/ProfileMenu.vue";
 import { SidebarGroup } from "~/components/ui/sidebar";
 import { buildUrl } from "~/lib/utils";
@@ -35,6 +37,11 @@ const items = [
     href: `/tournaments/${route.params.slug}/assets`,
     label: "Assets",
     icon: "fa7-solid:images",
+  },
+  {
+    href: `/tournaments/${route.params.slug}/staff-applications`,
+    label: "Staff Applications",
+    icon: "fa7-solid:users",
   },
 ];
 
@@ -79,7 +86,7 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
                     size="sm"
                     as-child
                     :tooltip="item.label"
-                    :is-active="route.path.includes(item.label.toLowerCase())"
+                    :is-active="route.path.endsWith(kebabCase(item.label).replace(' ', ''))"
                   >
                     <NuxtLink :to="item.href">
                       <Icon :name="item.icon ?? 'fa7-solid:question'" size="18" class="shrink-0" />
