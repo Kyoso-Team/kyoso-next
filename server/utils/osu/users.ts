@@ -51,6 +51,7 @@ export const ensureUsers = async (osuIds: number[]) => {
       osuId: user.id,
       username: user.username,
       countryCode: user.country.code,
+      email: `${user.id}@kyoso.invalid`,
       isAdmin: Number(runtimeConfig.ownerOsuUserId) === user.id,
     }));
 

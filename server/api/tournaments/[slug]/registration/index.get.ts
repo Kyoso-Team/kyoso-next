@@ -9,7 +9,7 @@ export default defineProtectedTournamentHandler(async (_, { session, tournament 
     },
     where: {
       tournamentId: tournament.id,
-      userId: session.user.id,
+      userId: Number(session.user.id),
     },
     with: {
       team: {

@@ -15,6 +15,6 @@ export default defineProtectedEventHandler(async (event, { session }) => {
       type: "linear",
       year: null,
     },
-    hostUserId: session.user.id,
+    hostUserId: Number(session.user.id),
   });
 });

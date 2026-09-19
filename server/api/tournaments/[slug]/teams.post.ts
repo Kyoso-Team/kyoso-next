@@ -7,7 +7,7 @@ import { tournamentTeamRegistrationCreateSchema } from "~~/shared/validation/tou
 
 export default defineProtectedTournamentHandler(async (event, { session, tournament }) => {
   if (tournament.type !== "teams") {
-    throw createError({ statusCode: 400, message: "Cannot register teams" });
+    throw createError({ status: 400, message: "Cannot register teams" });
   }
 
   const schema = tournamentTeamRegistrationCreateSchema(tournament.minTeamSize!);
@@ -20,7 +20,7 @@ export default defineProtectedTournamentHandler(async (event, { session, tournam
       .values({
         name: body.name,
         tournamentId: tournament.id,
-        captainUserId: session.user.id,
+        captainUserId: Number(session.user.id),
       })
       .returning({
         id: tournamentTeams.id,

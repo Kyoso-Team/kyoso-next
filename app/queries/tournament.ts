@@ -20,6 +20,7 @@ export const tournamentBySlugQuery = defineQueryOptions((data: { slug: string })
     $fetch<Tournament>(`/api/tournaments/${data.slug}`, {
       headers: useRequestHeaders(["cookie"]),
     }),
+  enabled: data.slug !== undefined,
 }));
 
 export const tournamentRulesBySlugQuery = defineQueryOptions((data: { slug: string }) => ({

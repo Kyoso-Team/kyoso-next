@@ -7,7 +7,7 @@ import { buildUrl } from "~/lib/utils";
 
 const route = useRoute("tournaments-slug");
 
-const { data: session } = useSession();
+const { user } = useUserSession();
 
 const { error: tournamentError } = useTournament();
 
@@ -109,13 +109,13 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
               </SidebarMenuItem>
             </SidebarMenu>
             <div class="flex justify-start gap-2">
-              <div v-if="session" class="w-full">
+              <div v-if="user" class="w-full">
                 <PopoverTrigger class="w-full">
                   <Button variant="ghost" class="flex w-full justify-start pl-0.5">
                     <Avatar class="rounded-md">
-                      <AvatarImage :src="buildUrl.userAvatar(session.user.osu.osuId)" />
+                      <AvatarImage :src="buildUrl.userAvatar(Number(user.osuId))" />
                     </Avatar>
-                    <span class="text-xs">{{ session.user.osu.username }}</span>
+                    <span class="text-xs">{{ user.name }}</span>
                   </Button>
                 </PopoverTrigger>
               </div>

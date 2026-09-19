@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { buildUrl } from "~/lib/utils";
 
-const { data: session } = useSession();
+const { user } = useUserSession();
 </script>
 
 <template>
@@ -11,10 +11,10 @@ const { data: session } = useSession();
         <KyosoLogo />
       </NuxtLink>
       <div class="flex items-center gap-2">
-        <div v-if="session" class="flex items-center">
+        <div v-if="user" class="flex items-center">
           <PopoverTrigger>
             <Avatar class="transition-transform hover:scale-105">
-              <AvatarImage :src="buildUrl.userAvatar(session.user.osu.osuId)" />
+              <AvatarImage :src="buildUrl.userAvatar(user.osuId)" />
             </Avatar>
           </PopoverTrigger>
         </div>

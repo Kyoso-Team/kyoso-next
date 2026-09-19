@@ -58,6 +58,14 @@ export const users = snakeCase.table("user", (t) => ({
   isAdmin: t.boolean().notNull().default(false),
   osuId: t.integer().notNull().unique(),
   username: t.varchar().notNull(),
+  /*
+    Better Auth requires email field,
+    but osu OAuth doesn't provide it,
+    so we use placeholder @kyoso.invalid
+  */
+  email: t.text().notNull().unique(),
+  emailVerified: t.boolean().default(true).notNull(),
+  image: t.text(),
   countryCode: t
     .char({ length: 2 })
     .notNull()
@@ -107,16 +115,56 @@ export const userRanks = snakeCase.table("user_rank", (t) => ({
   lastUpdatedAt: t.timestamp(timestampConfig).notNull().defaultNow(),
 }));
 
-export const sessions = snakeCase.table("session", (table) => ({
-  id: table.text().primaryKey(),
-  userId: table
-    .integer()
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  secretHash: table.text().notNull(),
-  lastVerifiedAt: table.timestamp(timestampConfig).notNull().defaultNow(),
-  createdAt: timestampColumns().createdAt,
-}));
+export const sessions = snakeCase.table(
+  "session",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    token: t.text().notNull().unique(),
+    userId: t
+      .integer()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: t.timestamp(timestampConfig).notNull(),
+    ipAddress: t.text(),
+    userAgent: t.text(),
+    ...timestampColumns(),
+  }),
+  (t) => [index().on(t.userId)],
+);
+
+export const accounts = snakeCase.table(
+  "account",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    accountId: t.text().notNull(),
+    providerId: t.text().notNull(),
+    userId: t
+      .integer()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    accessToken: t.text(),
+    refreshToken: t.text(),
+    idToken: t.text(),
+    accessTokenExpiresAt: t.timestamp(timestampConfig),
+    refreshTokenExpiresAt: t.timestamp(timestampConfig),
+    scope: t.text(),
+    password: t.text(),
+    ...timestampColumns(),
+  }),
+  (t) => [index().on(t.userId)],
+);
+
+export const verifications = snakeCase.table(
+  "verification",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    identifier: t.text().notNull(),
+    value: t.text().notNull(),
+    expiresAt: t.timestamp(timestampConfig).notNull(),
+    ...timestampColumns(),
+  }),
+  (t) => [index().on(t.identifier)],
+);
 
 export const countries = snakeCase.table("country", (t) => ({
   code: t

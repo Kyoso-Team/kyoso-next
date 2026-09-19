@@ -46,7 +46,7 @@ const playerRegs = computed<PlayerRegsStatus>(() => {
   };
 });
 
-const { data: session } = useSession();
+const { user } = useUserSession();
 
 const { data: ranks } = useQuery(() => myRanksQuery());
 
@@ -183,7 +183,7 @@ const agreedToRules = ref(false);
         </template>
         <template v-else-if="registration.team">
           <div
-            v-if="registration.team.captainUserId === session!.user.id"
+            v-if="registration.team.captainUserId === Number(user!.id)"
             class="flex flex-col gap-2"
           >
             <p class="text-muted-foreground text-center text-xs">

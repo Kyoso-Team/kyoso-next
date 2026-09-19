@@ -2,6 +2,8 @@
 import "vue-sonner/style.css";
 import { PiniaColadaDevtools } from "@pinia/colada-devtools";
 
+useAuthIdentity();
+
 const { modal, setModal } = useModal();
 
 useHead({
