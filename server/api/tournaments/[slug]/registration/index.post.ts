@@ -11,7 +11,7 @@ export default defineProtectedTournamentHandler(async (_, { tournament, session 
   const existingRegistration = await db.query.tournamentParticipants.findFirst({
     where: {
       tournamentId: tournament.id,
-      userId: session.user.id,
+      userId: Number(session.user.id),
     },
     columns: {
       id: true,
@@ -26,10 +26,10 @@ export default defineProtectedTournamentHandler(async (_, { tournament, session 
   }
 
   await db.insert(tournamentParticipants).values({
-    username: session.user.osu.username,
+    username: session.user.name,
     tournamentId: tournament.id,
-    userId: session.user.id,
-    osuId: session.user.osu.osuId,
-    countryCode: session.user.osu.countryCode,
+    userId: Number(session.user.id),
+    osuId: session.user.osuId,
+    countryCode: session.user.countryCode,
   });
 });

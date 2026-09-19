@@ -2,7 +2,14 @@ import { eq, inArray } from "drizzle-orm";
 import { Ruleset } from "osu-api-v2-js";
 import * as v from "valibot";
 import { db } from "~~/server/database/client";
-import { badges, countries, users, userAwardedBadges, userRanks } from "~~/server/database/schema";
+import {
+  badges,
+  countries,
+  users,
+  userAwardedBadges,
+  userRanks,
+  accounts,
+} from "~~/server/database/schema";
 import { osuClient } from "~~/server/osu-client";
 import { isNonTournamentBadge } from "~~/server/utils/badge";
 import { pick } from "~~/server/utils/database";
@@ -53,12 +60,19 @@ export default defineEventHandler(async (event) => {
       .insert(users)
       .values({
         osuId: osuUser.id,
+        email: `${osuUser.id}@kyoso.invalid`,
         username: osuUser.username,
         countryCode: newCountry.code,
         isAdmin: Number(runtimeConfig.ownerOsuUserId) === osuUser.id,
       })
       .returning(pick(users, { id: true }))
       .then((result) => result[0]!);
+
+    await tx.insert(accounts).values({
+      userId: newUser.id,
+      accountId: String(osuUser.id),
+      providerId: "osu",
+    });
 
     await tx.insert(userRanks).values({
       userId: newUser.id,

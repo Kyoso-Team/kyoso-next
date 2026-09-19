@@ -4,7 +4,8 @@ import { tournamentStaffApplications } from "~~/server/database/schema";
 import { staffRegistrationCreateSchema } from "~~/shared/validation/staff-registration";
 
 export default defineProtectedTournamentHandler(async (event, { session, tournament }) => {
-  if (tournament.hostUserId === session.user.id) {
+  const userId = Number(session.user.id);
+  if (tournament.hostUserId === userId) {
     throw createError({ statusCode: 403, message: "Host cannot apply for staff" });
   }
 
@@ -15,7 +16,7 @@ export default defineProtectedTournamentHandler(async (event, { session, tournam
   const existingApplication = await db.query.tournamentStaffApplications.findFirst({
     where: {
       tournamentId: tournament.id,
-      userId: session.user.id,
+      userId,
     },
     columns: {
       id: true,
@@ -28,7 +29,7 @@ export default defineProtectedTournamentHandler(async (event, { session, tournam
 
   await db.insert(tournamentStaffApplications).values({
     tournamentId: tournament.id,
-    userId: session.user.id,
+    userId,
     ...body,
   });
 });

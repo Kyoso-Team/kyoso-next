@@ -20,6 +20,13 @@ export const relations = defineRelations(schema, (r) => ({
       optional: false,
     }),
   },
+  accounts: {
+    user: r.one.users({
+      from: r.accounts.userId,
+      to: r.users.id,
+      optional: false,
+    }),
+  },
   users: {
     discord: r.one.discordUsers({
       from: r.users.id,

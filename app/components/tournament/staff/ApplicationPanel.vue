@@ -25,6 +25,15 @@ const form = useForm({
   schema: staffRegistrationCreateSchema,
 });
 
+const { user } = useUserSession();
+const { tournament, refresh } = useTournament();
+
+await refresh();
+
+const canApplyForStaff = computed(() => {
+  return Number(user?.value?.id) !== tournament.value?.data?.hostUserId;
+});
+
 const handleRoleChange = (role: StaffRole, checked: boolean | "indeterminate") => {
   if (checked === "indeterminate") return;
   if (checked) {
@@ -59,7 +68,8 @@ const handleSubmit: SubmitHandler<typeof staffRegistrationCreateSchema> = (value
 
 <template>
   <Dialog>
-    <DialogTrigger>
+    <Button v-if="!canApplyForStaff" disabled class="h-10 w-full">Apply for staff</Button>
+    <DialogTrigger v-else>
       <Button class="h-10 w-full">Apply for staff</Button>
     </DialogTrigger>
     <DialogContent class="max-h-[90vh]">

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { buildUrl } from "~/lib/utils";
 
-const { data: session } = useSession();
+const { user } = useUserSession();
 const { data: badges } = useQuery({
-  key: () => ["badges", session.value!.user.osu.osuId],
+  key: () => ["badges", user.value!.osuId],
   query: () =>
     $fetch("/api/badges", {
       headers: useRequestHeaders(["cookie"]),
@@ -14,25 +14,26 @@ const { data: badges } = useQuery({
 <template>
   <div class="mx-auto flex size-full max-w-5xl flex-col gap-3 p-4 py-10">
     <h1 class="text-3xl">User Profile</h1>
-    <Card v-if="session">
+    <Card v-if="user">
       <CardContent class="space-y-4">
         <div class="flex items-start gap-5">
           <Avatar class="size-20 rounded-md">
-            <AvatarImage :src="buildUrl.userAvatar(session.user.osu.osuId)" />
+            <AvatarImage :src="buildUrl.userAvatar(user.osuId)" />
           </Avatar>
           <div class="flex h-full flex-col text-xl">
             <div class="flex items-center gap-2">
-              <span>{{ session.user.osu.username }}</span>
-              <NuxtLink external :to="`https://osu.ppy.sh/u/${session.user.osu.osuId}`">
-                <OsuIcon />
+              <NuxtLink
+                external
+                class="hover:text-primary truncate transition-colors hover:underline"
+                target="_blank"
+                :to="`https://osu.ppy.sh/u/${user.osuId}`"
+              >
+                <span>{{ user.name }}</span>
               </NuxtLink>
             </div>
-            <div
-              v-if="session.user.discord"
-              class="text-muted-foreground flex items-center gap-1 text-xs"
-            >
+            <div v-if="user.discord" class="text-muted-foreground flex items-center gap-1 text-xs">
               <Icon name="fa7-brands:discord" />
-              <span>{{ session.user.discord.username }}</span>
+              <span>{{ user.discord.username }}</span>
             </div>
             <Button as="a" href="/api/auth/discord" size="sm" variant="outline" v-else>
               <Icon name="fa7-brands:discord" />
@@ -41,11 +42,11 @@ const { data: badges } = useQuery({
             <div class="mt-2 flex items-center gap-1">
               <span
                 :style="{
-                  'background-image': `url(${buildUrl.countryFlag(session.user.osu.countryCode)})`,
+                  'background-image': `url(${buildUrl.countryFlag(user.countryCode)})`,
                 }"
                 class="size-6 shrink-0"
               />
-              <span class="text-sm">{{ session.user.osu.country }}</span>
+              <span class="text-sm">{{ user.country }}</span>
             </div>
           </div>
         </div>

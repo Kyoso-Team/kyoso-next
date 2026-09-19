@@ -8,7 +8,7 @@ export default defineProtectedTournamentHandler(async (_, { tournament, session 
   const existingRegistration = await db.query.tournamentParticipants.findFirst({
     where: {
       tournamentId: tournament.id,
-      userId: session.user.id,
+      userId: Number(session.user.id),
     },
     columns: {
       id: true,
@@ -28,7 +28,7 @@ export default defineProtectedTournamentHandler(async (_, { tournament, session 
     .where(
       and(
         eq(tournamentParticipants.tournamentId, tournament.id),
-        eq(tournamentParticipants.userId, session.user.id),
+        eq(tournamentParticipants.userId, Number(session.user.id)),
       ),
     );
 });

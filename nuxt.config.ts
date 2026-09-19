@@ -35,6 +35,7 @@ export default defineNuxtConfig({
     "@comark/nuxt",
     "@pinia/colada-nuxt",
     "@pinia/nuxt",
+    "@nuxtjs/better-auth",
   ],
   evlog: {
     env: {

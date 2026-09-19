@@ -22,7 +22,7 @@ import { REGISTRATIONS_QUERY_KEYS } from "~/queries/registrations";
 const slug = useRoute("tournaments-slug-register").params.slug;
 
 const { tournament } = useTournament();
-const { data: session } = useSession();
+const { user } = useUserSession();
 
 const { state: registerData, refresh: registerRefresh } = useQuery({
   key: REGISTRATIONS_QUERY_KEYS.bySlug(slug),
@@ -68,17 +68,15 @@ const onResolved = (index: number, user: ResolvedOsuUser | null) => {
 };
 
 const captain = computed<ResolvedOsuUser | null>(() => {
-  const osu = session.value?.user.osu;
-
-  if (!osu) return null;
-
-  return {
-    osuId: osu.osuId,
-    username: osu.username,
-    countryCode: osu.countryCode,
-    osuRank: null,
-    avatarUrl: buildUrl.userAvatar(osu.osuId),
-  };
+  return user.value
+    ? {
+        osuId: user.value.osuId,
+        username: user.value.name,
+        countryCode: user.value.countryCode,
+        osuRank: null,
+        avatarUrl: buildUrl.userAvatar(user.value.osuId),
+      }
+    : null;
 });
 
 const resolvedPlayers = computed<ResolvedOsuUser[]>(() => {

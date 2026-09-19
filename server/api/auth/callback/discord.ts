@@ -55,10 +55,12 @@ export default defineProtectedEventHandler(async (event, { session }) => {
     .values({
       discordId: id,
       username,
-      userId: session.user.id,
+      userId: Number(session.user.id),
     })
     .returning(pick(discordUsers, { id: true, username: true }))
     .then((user) => user[0]!);
+
+  await refreshSessionCookieCache(event);
 
   return await sendRedirect(event, "/profile", 302);
 });

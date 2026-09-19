@@ -25,14 +25,14 @@ export const validateTournamentAccess = async (session: SessionPayload, slug: st
       hasAccess: sql<boolean>`exists(select 1
                         from ${tournaments}
                                  left join ${tournamentAccess} on ${tournamentAccess.tournamentId} = ${tournaments.id}
-                        where ${and(eq(tournaments.slug, slug), or(eq(tournamentAccess.userId, session.user.id), eq(tournaments.hostUserId, session.user.id)))})`,
+                        where ${and(eq(tournaments.slug, slug), or(eq(tournamentAccess.userId, Number(session.user.id)), eq(tournaments.hostUserId, Number(session.user.id))))})`,
     })
     .from(tournaments)
     .leftJoin(
       tournamentAccess,
       and(
         eq(tournamentAccess.tournamentId, tournaments.id),
-        eq(tournamentAccess.userId, session.user.id),
+        eq(tournamentAccess.userId, Number(session.user.id)),
       ),
     )
     .where(eq(tournaments.slug, slug))

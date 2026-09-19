@@ -1,4 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const osuSignIn = useSignIn("social");
+
+const login = async () => {
+  await osuSignIn.execute({
+    provider: "osu" as never,
+    callbackURL: "/dashboard",
+  });
+};
+</script>
 
 <template>
   <main class="bg-background fixed inset-0 z-50 flex flex-col items-center justify-center p-4">
@@ -12,7 +21,7 @@
       </p>
       <p>Only testers are allowed, login to osu! to identify if you are a tester or not.</p>
       <div class="mt-4 flex justify-center">
-        <Button as="a" href="/api/auth/login"> Login </Button>
+        <Button @click="login"> Login </Button>
       </div>
     </div>
   </main>

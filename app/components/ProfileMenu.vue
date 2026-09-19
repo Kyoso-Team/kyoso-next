@@ -4,6 +4,16 @@ import type { PopoverContentProps } from "reka-ui";
 const { side = "bottom" } = defineProps<{
   side?: PopoverContentProps["side"];
 }>();
+
+const { signOut } = useUserSession();
+
+const logout = async () => {
+  await signOut({
+    onSuccess: () => {
+      navigateTo("/login");
+    },
+  });
+};
 </script>
 
 <template>
@@ -16,9 +26,7 @@ const { side = "bottom" } = defineProps<{
     <NuxtLink to="/profile" class="w-full">
       <Button type="button" class="w-full justify-start" variant="ghost">Profile</Button>
     </NuxtLink>
-    <Button as="a" href="/api/auth/logout" variant="ghost" class="w-full justify-start"
-      >Log out</Button
-    >
+    <Button @click="logout" variant="ghost" class="w-full justify-start">Log out</Button>
     <div class="flex w-full justify-between px-4 py-2">
       <span class="text-sm">Theme</span>
       <label class="flex gap-2" htmlFor="theme-switch">

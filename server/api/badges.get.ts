@@ -6,7 +6,7 @@ type Badge = typeof badges.$inferSelect & { awardedAt: Date };
 export default defineProtectedEventHandler(async (_, { session }) => {
   const result = await db.query.userAwardedBadges.findMany({
     where: {
-      userId: session.user.id,
+      userId: Number(session.user.id),
     },
     with: {
       badge: true,
