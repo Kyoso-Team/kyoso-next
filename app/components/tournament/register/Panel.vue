@@ -182,7 +182,7 @@ const agreedToRules = ref(false);
         </template>
         <template v-else-if="registration.team">
           <div
-            v-if="registration.team.captainUserId === Number(user!.id)"
+            v-if="registration.team.captainUserId === Number(user?.id)"
             class="flex flex-col gap-2"
           >
             <p class="text-muted-foreground text-center text-xs">

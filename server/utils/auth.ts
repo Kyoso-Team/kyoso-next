@@ -5,5 +5,3 @@ export type SessionPayload = {
   session: AuthSession;
   user: AuthUser;
 };
-
-export type SessionValidationResult = SessionPayload | null;

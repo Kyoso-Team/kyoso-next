@@ -8,7 +8,7 @@ import {
   type SubmitHandler,
 } from "@formisch/vue";
 import dayjs from "dayjs";
-import { tournamentTeamRegistrationCreateSchema } from "~~/shared/validation/tournament-registration";
+import { tournamentTeamRegistrationCreateSchema } from "~~/shared/validation/tournament/registration";
 
 import { buildTeamRegistrationConditions } from "~/components/tournament/register/team/conditions";
 import TeamRequirements from "~/components/tournament/register/team/Requirements.vue";

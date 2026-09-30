@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import "vue-sonner/style.css";
-import { PiniaColadaDevtools } from "@pinia/colada-devtools";
 
 useAuthIdentity();
 
@@ -47,7 +46,6 @@ useSeoMeta({
     </Dialog>
     <Toaster richColors position="bottom-right" class="pointer-events-auto" />
   </div>
-  <PiniaColadaDevtools />
 </template>
 
 <style>

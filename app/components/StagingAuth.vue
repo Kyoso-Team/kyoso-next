@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const osuSignIn = useSignIn("social");
+const authClient = useAuthClient();
 
 const login = async () => {
-  await osuSignIn.execute({
-    provider: "osu" as never,
+  await authClient?.signIn.social({
+    provider: "osu",
     callbackURL: "/dashboard",
   });
 };
