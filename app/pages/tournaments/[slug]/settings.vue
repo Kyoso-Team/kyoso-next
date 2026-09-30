@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
-import type { UpdateTournament } from "~~/shared/validation/tournaments";
+import type { UpdateTournament } from "~~/shared/validation/tournament";
 
 const route = useRoute("tournaments-slug");
 const { data: tournament, refresh } = useTournament();

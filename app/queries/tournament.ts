@@ -1,4 +1,4 @@
-import type { Tournament } from "~~/shared/validation/tournaments";
+import type { Tournament } from "~~/shared/validation/tournament";
 
 export const TOURNAMENT_QUERY_KEYS = {
   root: ["tournaments"] as const,

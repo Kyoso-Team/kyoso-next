@@ -5,7 +5,7 @@ import { db } from "~~/server/database/client";
 import { tournamentDates, tournaments } from "~~/server/database/schema";
 import type { Nullish } from "~~/shared/types";
 import { parseUTCDateTime } from "~~/shared/utils/date";
-import { tournamentDatesFormSchema } from "~~/shared/validation/tournament-dates";
+import { tournamentDatesFormSchema } from "~~/shared/validation/tournament/dates";
 
 const toDatabaseDateTime = (value: Nullish<string>) =>
   value ? parseUTCDateTime(value).toDate() : null;

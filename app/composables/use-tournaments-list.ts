@@ -1,5 +1,5 @@
 import type { InferOutput } from "valibot";
-import type { createTournamentSchema } from "~~/shared/validation/tournaments";
+import type { createTournamentSchema } from "~~/shared/validation/tournament";
 
 import { tournamentsQuery } from "~/queries/tournament";
 

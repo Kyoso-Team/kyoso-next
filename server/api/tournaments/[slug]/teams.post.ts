@@ -3,7 +3,7 @@ import { db } from "~~/server/database/client";
 import { tournamentParticipants } from "~~/server/database/schema";
 import { tournamentTeams } from "~~/server/database/schema";
 import { ensureUsers } from "~~/server/utils/osu/users";
-import { tournamentTeamRegistrationCreateSchema } from "~~/shared/validation/tournament-registration";
+import { tournamentTeamRegistrationCreateSchema } from "~~/shared/validation/tournament/registration";
 
 export default defineProtectedTournamentHandler(async (event, { session, tournament }) => {
   if (tournament.type !== "teams") {

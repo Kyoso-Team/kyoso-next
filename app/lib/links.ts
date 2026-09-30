@@ -1,4 +1,4 @@
-import type { TournamentLink } from "~~/shared/validation/tournament-links";
+import type { TournamentLink } from "~~/shared/validation/tournament/links";
 
 export const typeIconMap: Record<TournamentLink["type"], string> = {
   "x/twitter": "fa7-brands:twitter",

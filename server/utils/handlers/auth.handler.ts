@@ -1,4 +1,3 @@
-import { useLogger } from "evlog/nitro";
 import type { EventHandlerRequest, H3Event } from "h3";
 
 import type { AppSession } from "#nuxt-better-auth";
@@ -15,19 +14,10 @@ export function defineProtectedEventHandler<T extends EventHandlerRequest, D>(
 ) {
   return defineEventHandler({
     handler: async (event) => {
-      const log = useLogger(event);
-
-      const { user, session } = await requireUserSession(event);
-
-      log.set({
-        user: { osuId: user.osuId },
-      });
+      const session = await requireUserSession(event);
 
       return await handler(event, {
-        session: {
-          session,
-          user,
-        },
+        session,
       });
     },
   });

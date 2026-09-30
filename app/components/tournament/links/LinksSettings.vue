@@ -12,7 +12,7 @@ import {
   pickDirty,
 } from "@formisch/vue";
 import { toast } from "vue-sonner";
-import { tournamentLinkSchema, type TournamentLink } from "~~/shared/validation/tournament-links";
+import { tournamentLinkSchema, type TournamentLink } from "~~/shared/validation/tournament/links";
 
 import { typeIconMap } from "~/lib/links";
 import { tournamentBySlugQuery } from "~/queries/tournament";

@@ -5,7 +5,7 @@ import {
   TOURNAMENT_LINK_TYPES,
   tournamentLinkItemSchema,
   type TournamentLink,
-} from "~~/shared/validation/tournament-links";
+} from "~~/shared/validation/tournament/links";
 
 import { isInvalid } from "~/components/ui/field/utils";
 

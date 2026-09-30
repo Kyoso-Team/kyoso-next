@@ -1,4 +1,4 @@
-import type { Tournament } from "~~/shared/validation/tournaments";
+import type { Tournament } from "~~/shared/validation/tournament";
 
 import type { TeamRegistrationCondition } from "./types";
 

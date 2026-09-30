@@ -20,7 +20,7 @@ import {
   type TournamentDateCreate,
   type TournamentDates,
   type UpdateTournamentDates,
-} from "~~/shared/validation/tournament-dates";
+} from "~~/shared/validation/tournament/dates";
 
 import { isInvalid } from "~/components/ui/field/utils";
 import {

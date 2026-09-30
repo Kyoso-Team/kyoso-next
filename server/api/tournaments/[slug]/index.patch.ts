@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import * as v from "valibot";
 import { db } from "~~/server/database/client";
 import { tournaments } from "~~/server/database/schema";
-import { updateTournamentSchema } from "~~/shared/validation/tournaments";
+import { updateTournamentSchema } from "~~/shared/validation/tournament";
 
 export default defineTournamentAccessHandler(async (event, { tournament }) => {
   const body = await readValidatedBody(event, (b) => v.parse(updateTournamentSchema, b));

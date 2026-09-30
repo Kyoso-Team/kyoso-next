@@ -9,7 +9,12 @@ const route = useRoute("tournaments-slug");
 
 const { user } = useUserSession();
 
-const { error: tournamentError } = useTournament();
+const { data, error: tournamentError } = useTournament();
+
+useSeoMeta({
+  ogTitle: data.value?.name,
+  ogImage: data.value?.banner,
+});
 
 if (tournamentError.value) {
   console.error(tournamentError.value);
@@ -30,8 +35,9 @@ const items = [
     icon: "fa7-solid:users",
   },
   {
-    href: `/tournaments/${route.params.slug}/stages`,
-    label: "Stages",
+    href: `/tournaments/${route.params.slug}/rounds`,
+    label: "Rounds",
+    icon: "fa7-solid:trophy",
   },
   {
     href: `/tournaments/${route.params.slug}/assets`,

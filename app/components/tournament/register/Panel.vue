@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 import { myRanksQuery } from "~~/app/queries/rank";
-import type { TournamentRegistration } from "~~/shared/validation/tournament-registration";
-import type { Tournament } from "~~/shared/validation/tournaments";
+import type { Tournament } from "~~/shared/validation/tournament";
+import type { TournamentRegistration } from "~~/shared/validation/tournament/registration";
 
 import { useTournamentRegistration } from "~/mutations/registrations";
 
@@ -26,8 +26,6 @@ const playerRegs = computed<PlayerRegsStatus>(() => {
   const { start, end } = tournament.tournamentDates.playerRegs;
 
   const regsNotStarted = dayjs().isBefore(start);
-  const regsClosed = dayjs().isAfter(end);
-
   if (regsNotStarted) {
     return {
       status: "not-started",
@@ -35,6 +33,7 @@ const playerRegs = computed<PlayerRegsStatus>(() => {
     };
   }
 
+  const regsClosed = dayjs().isAfter(end);
   if (regsClosed) {
     return {
       status: "closed",

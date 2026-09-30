@@ -16,7 +16,7 @@ import {
   updateTournamentSchema,
   type Tournament,
   type UpdateTournament,
-} from "~~/shared/validation/tournaments";
+} from "~~/shared/validation/tournament";
 
 const DEFAULT_BWS_SETTINGS: Tournament["bwsSettings"] = {
   x: 0.9937,

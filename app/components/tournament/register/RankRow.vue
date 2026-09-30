@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { myRanksQuery } from "~~/app/queries/rank";
-import type { Tournament } from "~~/shared/validation/tournaments";
+import type { Tournament } from "~~/shared/validation/tournament";
 
 const { data: ranks } = useQuery(() => myRanksQuery());
 

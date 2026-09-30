@@ -5,7 +5,7 @@ import { useForm, Form, Field as FormField, type SubmitHandler, useField } from 
 import {
   tournamentDateCreateSchema,
   type TournamentDateCreate,
-} from "~~/shared/validation/tournament-dates";
+} from "~~/shared/validation/tournament/dates";
 
 import { isInvalid } from "~/components/ui/field/utils";
 

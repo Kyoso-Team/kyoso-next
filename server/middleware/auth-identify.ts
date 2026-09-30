@@ -6,7 +6,6 @@ export default defineEventHandler(async (event) => {
   identify ??= createAuthMiddleware(serverAuth(event), {
     exclude: ["/api/auth/**", "/api/public/**"],
     include: ["/api/**"],
-    maskEmail: true,
   });
 
   if (!event.context.log) return;

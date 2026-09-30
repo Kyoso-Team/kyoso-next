@@ -1,4 +1,4 @@
-import { isNotNull, isNull, lt, or } from "drizzle-orm";
+import { isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 import type { PgTimestampConfig } from "drizzle-orm/pg-core";
 import {
   check,
@@ -11,12 +11,9 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import type { BWSSettings } from "~~/server/utils/validation/tournament";
-import type { TournamentLink } from "~~/shared/validation/tournament-links";
-
-export type AssetMetadata = {
-  fileId: string;
-  originalFileName: string;
-};
+import type { AssetMetadata } from "~~/shared/types";
+import type { TournamentLink } from "~~/shared/validation/tournament/links";
+import type { TournamentRoundConfig } from "~~/shared/validation/tournament/rounds";
 
 const timestampConfig: PgTimestampConfig = {
   mode: "date",
@@ -51,6 +48,12 @@ export const StaffRoles = pgEnum("staff_roles", [
   "mappooler",
   "streamer",
   "gfx",
+]);
+
+export const TournamentStageType = pgEnum("tournament_stage_type", [
+  "qualifiers",
+  "groups",
+  "bracket",
 ]);
 
 export const users = snakeCase.table("user", (t) => ({
@@ -349,8 +352,28 @@ export const tournamentStaffApplications = snakeCase.table(
       .references(() => users.id, { onDelete: "cascade" }),
     roles: StaffRoles().array().notNull(),
     notes: t.text(),
+    ...timestampColumns(),
   }),
   (t) => [index("idx_tournament_staff_application_user_id").on(t.tournamentId, t.userId)],
+);
+
+export const tournamentRounds = snakeCase.table(
+  "tournament_round",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    tournamentId: t
+      .integer()
+      .notNull()
+      .references(() => tournaments.id, { onDelete: "cascade" }),
+    name: t.text().notNull(),
+    config: t.jsonb().$type<TournamentRoundConfig>(),
+    ...timestampColumns(),
+  }),
+  (t) => [
+    uniqueIndex("udx_tournament_round_qualifier")
+      .on(t.tournamentId)
+      .where(sql`config->>'type' = 'qualifier'`),
+  ],
 );
 
 export type UserSelect = typeof users.$inferSelect;
@@ -361,3 +384,4 @@ export type TournamentSelect = typeof tournaments.$inferSelect;
 export type TournamentInsert = typeof tournaments.$inferInsert;
 
 export type BadgeSelect = typeof badges.$inferSelect;
+export type TournamentRound = typeof tournamentRounds.$inferSelect;

@@ -3,8 +3,8 @@ import * as v from "valibot";
 import { tournaments } from "~~/server/database/schema";
 import { bwsSettingsSchema } from "~~/server/utils/validation/tournament";
 
-import { tournamentDatesSchema } from "./tournament-dates";
-import { tournamentLinkItemSchema } from "./tournament-links";
+import { tournamentDatesSchema } from "./dates";
+import { tournamentLinkItemSchema } from "./links";
 
 export const createTournamentSchema = v.object({
   name: v.pipe(v.string(), v.minLength(2, "Tournament name must be at least 2 characters long.")),

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form, Field as FormField, useForm, type SubmitHandler } from "@formisch/vue";
 import * as v from "valibot";
-import { createTournamentSchema } from "~~/shared/validation/tournaments";
+import { createTournamentSchema } from "~~/shared/validation/tournament";
 
 import { isInvalid } from "../ui/field/utils";
 

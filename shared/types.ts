@@ -1,3 +1,8 @@
+export type AssetMetadata = {
+  fileId: string;
+  originalFileName: string;
+};
+
 export type Nullish<T> = T | null | undefined;
 
 export type Participant = {
@@ -12,7 +17,7 @@ export type Participant = {
 export type Team = {
   id: number;
   name: string;
-  avatar: { fileId: string; originalFileName: string } | null;
+  avatar: AssetMetadata | null;
   rank: number;
   participants: Participant[];
 };
