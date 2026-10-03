@@ -10,6 +10,7 @@ import {
 import dayjs from "dayjs";
 import { tournamentTeamRegistrationCreateSchema } from "~~/shared/validation/tournament/registration";
 
+import { $fetch } from "#build/fetch";
 import { buildTeamRegistrationConditions } from "~/components/tournament/register/team/conditions";
 import TeamRequirements from "~/components/tournament/register/team/Requirements.vue";
 import TeamSlotRow from "~/components/tournament/register/team/SlotRow.vue";

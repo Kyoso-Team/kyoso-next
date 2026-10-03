@@ -1,6 +1,6 @@
 import { useRoute } from "vue-router";
 import { toast } from "vue-sonner";
-import type { TournamentTeamRegistrationCreate } from "~~/shared/validation/tournament-registration";
+import type { TournamentTeamRegistrationCreate } from "~~/shared/validation/tournament/registration";
 
 import { REGISTRATIONS_QUERY_KEYS } from "~/queries/registrations";
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { $fetch } from "#build/fetch";
 import { buildUrl } from "~/lib/utils";
 
 const { user } = useUserSession();
@@ -26,7 +27,7 @@ const { data: badges } = useQuery({
                 external
                 class="hover:text-primary truncate transition-colors hover:underline"
                 target="_blank"
-                :to="`https://osu.ppy.sh/u/${user.osuId}`"
+                :to="buildUrl.userProfile(user.osuId)"
               >
                 <span>{{ user.name }}</span>
               </NuxtLink>
@@ -35,7 +36,7 @@ const { data: badges } = useQuery({
               <Icon name="fa7-brands:discord" />
               <span>{{ user.discord.username }}</span>
             </div>
-            <Button as="a" href="/api/auth/discord" size="sm" variant="outline" v-else>
+            <Button v-else as="a" href="/api/auth/discord" size="sm" variant="outline">
               <Icon name="fa7-brands:discord" />
               <span>Connect Discord</span>
             </Button>
@@ -61,6 +62,7 @@ const { data: badges } = useQuery({
           <div v-if="badges && badges.length > 0" class="flex gap-2">
             <NuxtImg
               v-for="badge in badges"
+              :key="badge.imgFileName"
               :data-bws-eligible="badge.isBwsEligible"
               class="group-has-data-[state=checked]:data-[bws-eligible=false]:opacity-30"
               :src="buildUrl.badge(badge.imgFileName)"

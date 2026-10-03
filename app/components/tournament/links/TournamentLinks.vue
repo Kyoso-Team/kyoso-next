@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TournamentLink } from "~~/shared/validation/tournament-links";
+import type { TournamentLink } from "~~/shared/validation/tournament/links";
 
 import { typeIconMap } from "~/lib/links";
 

@@ -74,7 +74,7 @@ const rejectStaffApplication = useMutation({
               <div class="flex items-center gap-2">
                 <NuxtLink
                   class="hover:text-primary truncate text-lg font-semibold transition-colors hover:underline"
-                  :href="`https://osu.ppy.sh/u/${current.user.osuId}`"
+                  :href="buildUrl.userProfile(current.user.osuId)"
                   external
                   target="_blank"
                 >

@@ -2,13 +2,14 @@
 import { toast } from "vue-sonner";
 import type { UpdateTournament } from "~~/shared/validation/tournament";
 
+import { $fetch } from "#build/fetch";
+
 const route = useRoute("tournaments-slug");
 const { data: tournament, refresh } = useTournament();
 
 const { mutate: updateTournament } = useMutation({
   mutation: async (values: UpdateTournament) => {
     await $fetch(`/api/tournaments/${route.params.slug}`, {
-      // @ts-expect-error
       method: "PATCH",
       body: values,
     }).then(async () => {

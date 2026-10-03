@@ -23,7 +23,7 @@ defineProps<{
             <NuxtLink
               class="hover:text-primary truncate transition-colors hover:underline"
               external
-              :to="`https://osu.ppy.sh/u/${participant.osuId}`"
+              :to="buildUrl.userProfile(participant.osuId)"
               target="_blank"
             >
               <span>{{ participant.username }}</span>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const { tournament } = useTournament();
 
+import { $fetch } from "#build/fetch";
+
 const slug = tournament.value.data?.slug;
 
 const { data } = useQuery({
