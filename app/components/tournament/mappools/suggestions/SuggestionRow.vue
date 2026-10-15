@@ -140,7 +140,12 @@ const { isDragging } = makeDraggable(dragItem, {
     </div>
 
     <div>
-      <TournamentMappoolsSuggestionsStats :beatmap="entry.beatmap" :mod-bits="entry.modBits" />
+      <TournamentMappoolsSuggestionsStats
+        :beatmap="entry.beatmap"
+        :mod-bits="entry.modBits"
+        :stat-overrides="entry.statOverrides ?? undefined"
+        @update:stat-overrides="(o) => saveSuggestion({ statOverrides: o })"
+      />
     </div>
 
     <div>

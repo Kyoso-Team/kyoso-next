@@ -1,3 +1,9 @@
+const FLOAT_EPSILON = 1e-3;
+
+export const almostEquals = (a: number, b: number, acceptableDifference = FLOAT_EPSILON) => {
+  return Math.abs(a - b) <= acceptableDifference;
+};
+
 export const buildUrl = {
   userAvatar: (osuId: number) => `https://a.ppy.sh/${osuId}`,
   userProfile: (osuId: number) => `https://osu.ppy.sh/u/${osuId}`,

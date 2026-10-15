@@ -11,11 +11,6 @@ export type AddMappoolSuggestionInput = {
   position?: number;
 };
 
-/**
- * Shared "add suggestion" mutation definition. Fields like slot/position are
- * passed as mutate variables. Each form passes this to `useMutation()` so every
- * form input keeps its own loading/error state.
- */
 export const addMappoolSuggestionMutation = defineMutationOptions(() => {
   const queryCache = useQueryCache();
   const route = useRoute("tournaments-slug");
@@ -55,10 +50,7 @@ export const useUpdateMappoolSuggestion = defineMutation(() => {
           (entries: MappoolSuggestions | undefined) =>
             entries?.map((entry) => {
               if (entry.id !== input.suggestionId) return entry;
-              const updates = Object.fromEntries(
-                Object.entries(input.body).filter(([, value]) => value !== undefined),
-              );
-              return { ...entry, ...updates };
+              return { ...entry, ...data.entry };
             }),
         );
       }

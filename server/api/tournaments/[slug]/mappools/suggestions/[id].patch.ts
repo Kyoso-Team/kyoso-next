@@ -48,7 +48,7 @@ export default defineProtectedTournamentHandler(async (event, { session }) => {
 
   const affectedIds: number[] = [];
 
-  await db.transaction(async (tx) => {
+  const updatedRows = await db.transaction(async (tx) => {
     if (body.position && body.slot) {
       const takenSlot = await tx.query.tournamentMappoolEntry.findFirst({
         where: {
@@ -81,14 +81,28 @@ export default defineProtectedTournamentHandler(async (event, { session }) => {
       }
     }
 
-    await tx
+    const rows = await tx
       .update(tournamentMappoolEntry)
-      .set(body)
-      .where(eq(tournamentMappoolEntry.id, existingSuggestion.id));
+      .set({
+        ...body,
+        statOverrides:
+          body.modBits !== undefined
+            ? {
+                ...existingSuggestion.statOverrides,
+                ...body.statOverrides,
+                clockRate: undefined,
+              }
+            : body.statOverrides,
+      })
+      .where(eq(tournamentMappoolEntry.id, existingSuggestion.id))
+      .returning();
     affectedIds.push(existingSuggestion.id);
+
+    return rows;
   });
 
   return {
     affectedIds,
+    entry: updatedRows[0]!,
   };
 });
