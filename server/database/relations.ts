@@ -12,6 +12,10 @@ export const relations = defineRelations(schema, (r) => ({
       from: r.tournaments.id.through(r.tournamentAccess.tournamentId),
       to: r.users.id.through(r.tournamentAccess.userId),
     }),
+    rounds: r.many.tournamentRounds({
+      from: r.tournaments.id,
+      to: r.tournamentRounds.tournamentId,
+    }),
   },
   sessions: {
     user: r.one.users({
@@ -78,6 +82,25 @@ export const relations = defineRelations(schema, (r) => ({
   tournamentStaffApplications: {
     user: r.one.users({
       from: r.tournamentStaffApplications.userId,
+      to: r.users.id,
+      optional: false,
+    }),
+  },
+  beatmaps: {
+    beatmapFile: r.one.osuBeatmapFile({
+      from: r.beatmaps.id,
+      to: r.osuBeatmapFile.beatmapId,
+      optional: false,
+    }),
+  },
+  tournamentMappoolEntry: {
+    beatmap: r.one.beatmaps({
+      from: r.tournamentMappoolEntry.beatmapId,
+      to: r.beatmaps.id,
+      optional: false,
+    }),
+    submittedByUser: r.one.users({
+      from: r.tournamentMappoolEntry.submittedByUserId,
       to: r.users.id,
       optional: false,
     }),

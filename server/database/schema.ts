@@ -56,6 +56,14 @@ export const TournamentStageType = pgEnum("tournament_stage_type", [
   "bracket",
 ]);
 
+export const WinConditionEnum = pgEnum("win_condition", [
+  "scoreV1",
+  "accuracy",
+  "combo",
+  "scoreV2",
+  "misscount",
+]);
+
 export const users = snakeCase.table("user", (t) => ({
   id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
   isAdmin: t.boolean().notNull().default(false),
@@ -367,6 +375,7 @@ export const tournamentRounds = snakeCase.table(
       .references(() => tournaments.id, { onDelete: "cascade" }),
     name: t.text().notNull(),
     config: t.jsonb().$type<TournamentRoundConfig>(),
+    mappoolSlots: t.jsonb().array().$type<{ name: string; count: number }>(),
     ...timestampColumns(),
   }),
   (t) => [
@@ -375,6 +384,75 @@ export const tournamentRounds = snakeCase.table(
       .where(sql`config->>'type' = 'qualifier'`),
   ],
 );
+
+export const beatmaps = snakeCase.table(
+  "beatmaps",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    // Nullable to support unsubmitted beatmaps
+    beatmapId: t.integer().unique(),
+    // Same reason
+    beatmapsetId: t.integer(),
+    artist: t.text().notNull(),
+    artistUnicode: t.text().notNull(),
+    title: t.text().notNull(),
+    titleUnicode: t.text().notNull(),
+    difficulty: t.varchar().notNull(),
+    coverUrl: t.varchar(),
+    cs: t.real().notNull().default(0),
+    ar: t.real().notNull().default(0),
+    od: t.real().notNull().default(0),
+    hp: t.real().notNull().default(0),
+    maxCombo: t.integer().notNull(),
+    bpm: t.real().notNull(),
+    hitLength: t.integer().notNull(),
+    ...timestampColumns(),
+  }),
+  (t) => [index("idx_beatmap_beatmapId").on(t.beatmapId).where(isNotNull(t.beatmapId))],
+);
+
+export const osuBeatmapFile = snakeCase.table("osu_beatmap_file", (t) => ({
+  beatmapId: t
+    .integer()
+    .primaryKey()
+    .references(() => beatmaps.id, { onDelete: "cascade" }),
+  fileContents: t.text().notNull(),
+}));
+
+export const tournamentMappoolEntry = snakeCase.table(
+  "tournament_mappool_entry",
+  (t) => ({
+    id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+    roundId: t
+      .integer()
+      .notNull()
+      .references(() => tournamentRounds.id),
+    beatmapId: t
+      .integer()
+      .notNull()
+      .references(() => beatmaps.id),
+    submittedByUserId: t
+      .integer()
+      .notNull()
+      .references(() => users.id),
+    slot: t.varchar(),
+    position: t.integer(),
+    modBits: t.integer().notNull().default(0),
+    statOverrides: t.jsonb().$type<{
+      cs?: number;
+      ar?: number;
+      od?: number;
+      clockRate?: number;
+    }>(),
+    note: t.varchar(),
+    winCondition: WinConditionEnum().notNull().default("scoreV2"),
+  }),
+  (t) => [
+    uniqueIndex("udx_tournament_mappool_entry_beatmap_id").on(t.roundId, t.beatmapId),
+    uniqueIndex("udx_tournament_mappool_entry_slot_position").on(t.roundId, t.slot, t.position),
+  ],
+);
+export type MappoolEntry = typeof tournamentMappoolEntry.$inferSelect;
 
 export type UserSelect = typeof users.$inferSelect;
 export type SessionSelect = typeof sessions.$inferSelect;

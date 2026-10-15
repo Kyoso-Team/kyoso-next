@@ -7,6 +7,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --suggestion-grid-cols: 90px 150px minmax(150px, 400px) 80px 180px 220px 70px;
+  --draft-rows-grid-cols: 90px 50px 50px minmax(150px, 400px) 46px 38px 53px 30px 30px 30px 70px;
   --background: oklch(0.9859 0.0076 48.6568);
   --foreground: oklch(0.4279 0.0265 46.6194);
   --card: oklch(1 0 0);
@@ -179,4 +181,13 @@
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
   }
+}
+
+/* The drag preview teleports a clone of the dragged row into body, wrapped in
+   a plain div inside .dnd-kit-preview (so `>` selectors never reach the clone).
+   Far from its parent grid, grid-cols-subgrid resolves to nothing and the row
+   collapses into a single implicit column. */
+.dnd-kit-preview .zone {
+  grid-template-columns: var(--draft-rows-grid-cols);
+  gap: 0.5rem;
 }

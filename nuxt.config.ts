@@ -6,6 +6,17 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 5,
   },
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        // osu-downloader ships lib/index.d.ts but its package.json "exports"
+        // lacks a "types" condition, so TS can't resolve the typings.
+        paths: {
+          "osu-downloader": ["../node_modules/osu-downloader/lib/index.d.ts"],
+        },
+      },
+    },
+  },
   imports: {
     presets: [
       {
@@ -19,6 +30,7 @@ export default defineNuxtConfig({
   },
   experimental: {
     typedPages: true,
+    strictRouteTypes: true,
   },
   routeRules: {
     "/tournaments/:slug/**": {
@@ -36,6 +48,7 @@ export default defineNuxtConfig({
     "@pinia/colada-nuxt",
     "@pinia/nuxt",
     "@nuxtjs/better-auth",
+    "@vue-dnd-kit/nuxt",
   ],
   evlog: {
     env: {
@@ -44,7 +57,7 @@ export default defineNuxtConfig({
     routes: {
       "/api/**": { service: "kyoso-api" },
     },
-    exclude: ["/api/_nuxt_icon/**", "/api/session"],
+    exclude: ["/api/_nuxt_icon/**", "/_nuxt/**", "/api/session"],
   },
   $production: {
     evlog: {
@@ -58,6 +71,9 @@ export default defineNuxtConfig({
   css: ["~/assets/css/tailwind.css"],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ["rosu-pp-js"],
+    },
   },
   runtimeConfig: {
     public: {

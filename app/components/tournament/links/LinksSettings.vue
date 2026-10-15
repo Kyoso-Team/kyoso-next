@@ -14,6 +14,7 @@ import {
 import { toast } from "vue-sonner";
 import { tournamentLinkSchema, type TournamentLink } from "~~/shared/validation/tournament/links";
 
+import { $fetch } from "#build/fetch";
 import { typeIconMap } from "~/lib/links";
 import { tournamentBySlugQuery } from "~/queries/tournament";
 
@@ -28,7 +29,6 @@ const queryCache = useQueryCache();
 const { mutate: updateLinks } = useMutation({
   mutation: async (values: TournamentLink[]) => {
     await $fetch(`/api/tournaments/${params.slug}`, {
-      // @ts-expect-error
       method: "PATCH",
       body: {
         links: values,

@@ -1,12 +1,11 @@
 import type { EventHandlerRequest, H3Event } from "h3";
-import type { TournamentSelect } from "~~/server/database/schema";
 import { getTournament } from "~~/server/utils/handlers/public/tournament.handler";
 
 type ProtectedTournamentHandler<T extends EventHandlerRequest, D> = (
   event: H3Event<T>,
   data: {
     session: SessionPayload;
-    tournament: TournamentSelect;
+    tournament: Awaited<ReturnType<typeof getTournament>>;
   },
 ) => Promise<D>;
 

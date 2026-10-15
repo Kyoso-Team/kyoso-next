@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { SubmitHandler } from "@formisch/vue";
 import type {
   TournamentRoundConfig,
   TournamentRoundUpdate,
@@ -15,7 +14,7 @@ const route = useRoute("tournaments-slug");
 
 const { data } = useQuery(() => roundsQuery({ slug: route.params.slug }));
 
-const rounds = computed(() => data.value?.rounds);
+const rounds = computed(() => data.value);
 
 const hasQualifierRound = computed(() =>
   rounds.value?.some((round) => round.config.type === "qualifiers"),
@@ -91,7 +90,7 @@ const handleDelete = async () => {
                 </Badge>
                 <Icon
                   v-if="round.config.type === 'qualifiers'"
-                  name="lucide:lock"
+                  name="fa7-solid:lock"
                   class="text-muted-foreground size-3.5"
                 />
               </div>
@@ -100,9 +99,14 @@ const handleDelete = async () => {
                   {{ configSummary(round.config).join(" • ") }}
                 </span>
               </div>
+              <div class="flex flex-wrap gap-1.5 text-xs">
+                <span class="capitalize">
+                  {{ round.mappoolSlots.map((slot) => `${slot.count}${slot.name}`).join(" • ") }}
+                </span>
+              </div>
             </div>
-            <Button variant="ghost" size="icon-sm" @click="openEdit(round)">
-              <Icon name="lucide:settings-2" />
+            <Button variant="ghost" size="icon-sm" @click="openEdit(round)" title="Edit round">
+              <Icon size="16" name="fa7-solid:gear" />
             </Button>
           </CardContent>
         </Card>

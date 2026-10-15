@@ -2,6 +2,7 @@ import { useRoute } from "vue-router";
 import { toast } from "vue-sonner";
 import type { TournamentTeamRegistrationCreate } from "~~/shared/validation/tournament/registration";
 
+import { $fetch } from "#build/fetch";
 import { REGISTRATIONS_QUERY_KEYS } from "~/queries/registrations";
 
 export const useTournamentRegistration = defineMutation(() => {
@@ -14,9 +15,11 @@ export const useTournamentRegistration = defineMutation(() => {
         method: "POST",
         headers: useRequestHeaders(["cookie"]),
       }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("You have successfully registered!");
-      queryCache.invalidateQueries({ key: REGISTRATIONS_QUERY_KEYS.bySlug(route.params.slug) });
+      await queryCache.invalidateQueries({
+        key: REGISTRATIONS_QUERY_KEYS.bySlug(route.params.slug),
+      });
     },
   });
 
@@ -27,9 +30,11 @@ export const useTournamentRegistration = defineMutation(() => {
         body: input,
         headers: useRequestHeaders(["cookie"]),
       }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Your team has been registered!");
-      queryCache.invalidateQueries({ key: REGISTRATIONS_QUERY_KEYS.bySlug(route.params.slug) });
+      await queryCache.invalidateQueries({
+        key: REGISTRATIONS_QUERY_KEYS.bySlug(route.params.slug),
+      });
     },
     onError: () => {
       toast.error("Failed to register your team");
@@ -42,9 +47,11 @@ export const useTournamentRegistration = defineMutation(() => {
         method: "DELETE",
         headers: useRequestHeaders(["cookie"]),
       }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Your registration has been revoked.");
-      queryCache.invalidateQueries({ key: REGISTRATIONS_QUERY_KEYS.bySlug(route.params.slug) });
+      await queryCache.invalidateQueries({
+        key: REGISTRATIONS_QUERY_KEYS.bySlug(route.params.slug),
+      });
     },
   });
 

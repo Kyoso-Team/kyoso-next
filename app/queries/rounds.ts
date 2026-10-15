@@ -8,7 +8,7 @@ export const ROUNDS_QUERY_KEYS = {
 export const roundsQuery = defineQueryOptions((data: { slug: string }) => ({
   key: ROUNDS_QUERY_KEYS.bySlug(data.slug),
   query: () =>
-    $fetch<{ rounds: TournamentRoundRow[] }>(`/api/tournaments/${data.slug}/rounds`, {
+    $fetch<TournamentRoundRow[]>(`/api/tournaments/${data.slug}/rounds`, {
       headers: useRequestHeaders(["cookie"]),
     }),
 }));

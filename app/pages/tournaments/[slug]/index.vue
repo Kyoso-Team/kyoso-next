@@ -75,9 +75,7 @@ const getStageStatusStyles = (startDate: string, endDate: string) => {
         <CardHeader>
           <CardTitle class="text-3xl">{{ tournament.data.name }}</CardTitle>
         </CardHeader>
-        <CardContent
-          class="scrollbar-thumb-primary/80 scrollbar-track-none relative scrollbar-thin overflow-y-auto"
-        >
+        <CardContent class="relative overflow-y-auto">
           <Tabs default-value="description">
             <TabsList class="bg-card sticky top-0 w-full rounded-none">
               <TabsTrigger value="description"> Description </TabsTrigger>

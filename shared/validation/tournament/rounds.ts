@@ -48,6 +48,12 @@ export const tournamentRoundConfigSchema = v.variant("type", [
 ]);
 export type TournamentRoundConfig = v.InferOutput<typeof tournamentRoundConfigSchema>;
 
+export const mappoolSlotSchema = v.object({
+  name: v.string(),
+  count: v.number(),
+});
+export type MappoolSlot = v.InferOutput<typeof mappoolSlotSchema>;
+
 export const tournamentRoundSchema = createSelectSchema(tournamentRounds, {
   config: tournamentRoundConfigSchema,
 });
@@ -55,11 +61,13 @@ export type TournamentRound = v.InferOutput<typeof tournamentRoundSchema>;
 
 export const tournamentRoundCreateSchema = createInsertSchema(tournamentRounds, {
   config: tournamentRoundConfigSchema,
+  mappoolSlots: v.array(mappoolSlotSchema),
 });
 
 export const tournamentRoundUpdateSchema = v.object({
   name: v.pipe(v.string(), v.minLength(1, "Name is required")),
   config: tournamentRoundConfigSchema,
+  mappoolSlots: v.array(mappoolSlotSchema),
 });
 
 export type TournamentRoundUpdate = v.InferOutput<typeof tournamentRoundUpdateSchema>;
@@ -69,6 +77,7 @@ export type TournamentRoundRow = {
   tournamentId: number;
   name: string;
   config: TournamentRoundConfig;
+  mappoolSlots: MappoolSlot[];
   createdAt: Date;
   updatedAt: Date;
 };

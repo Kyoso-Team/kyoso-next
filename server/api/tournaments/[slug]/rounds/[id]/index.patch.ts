@@ -19,7 +19,10 @@ export default defineTournamentAccessHandler(async (event, { tournament }) => {
   try {
     const result = await db
       .update(tournamentRounds)
-      .set(body)
+      .set({
+        ...body,
+        mappoolSlots: body.mappoolSlots,
+      })
       .where(
         and(eq(tournamentRounds.id, roundId), eq(tournamentRounds.tournamentId, tournament.id)),
       )

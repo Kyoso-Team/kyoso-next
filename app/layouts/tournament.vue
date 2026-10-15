@@ -49,7 +49,13 @@ const items = [
     label: "Staff Applications",
     icon: "fa7-solid:users",
   },
+  {
+    href: `/tournaments/${route.params.slug}/mappools/suggestions`,
+    label: "Suggestions",
+  },
 ];
+
+console.log(route.path);
 
 const isSettingsPage = computed(() => route.path.includes("/settings"));
 </script>
@@ -116,7 +122,7 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
             </SidebarMenu>
             <div class="flex justify-start gap-2">
               <div v-if="user" class="w-full">
-                <PopoverTrigger class="w-full">
+                <PopoverTrigger as-child class="w-full">
                   <Button variant="ghost" class="flex w-full justify-start pl-0.5">
                     <Avatar class="rounded-md">
                       <AvatarImage :src="buildUrl.userAvatar(Number(user.osuId))" />

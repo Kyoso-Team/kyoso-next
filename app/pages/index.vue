@@ -13,7 +13,7 @@
     <div
       class="absolute top-0 left-0 z-4 flex h-full w-screen flex-col items-center justify-center gap-4"
     >
-      <h1 class="max-w-4xl px-4 text-center text-3xl font-bold tracking-tight sm:text-6xl">
+      <h1 class="max-w-4xl px-4 text-center text-3xl font-medium tracking-tight sm:text-6xl">
         osu! tournament management beyond spreadsheets
       </h1>
       <p class="max-w-xl px-4 text-center text-lg text-zinc-900 dark:text-zinc-300">

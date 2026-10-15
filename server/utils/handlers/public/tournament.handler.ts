@@ -1,11 +1,8 @@
 import { useLogger } from "evlog/nitro";
 import type { EventHandlerRequest, H3Event } from "h3";
 import { db } from "~~/server/database/client";
-import type { TournamentSelect } from "~~/server/database/schema";
 
-export async function getTournament<T extends EventHandlerRequest>(
-  event: H3Event<T>,
-): Promise<TournamentSelect> {
+export async function getTournament<T extends EventHandlerRequest>(event: H3Event<T>) {
   const log = useLogger(event);
 
   const tournamentSlug = getRouterParam(event, "slug");
@@ -25,6 +22,17 @@ export async function getTournament<T extends EventHandlerRequest>(
     where: {
       slug: tournamentSlug,
     },
+    with: {
+      rounds: {
+        columns: {
+          id: true,
+        },
+        orderBy: {
+          id: "desc",
+        },
+        limit: 1,
+      },
+    },
   });
 
   if (!tournament) {
@@ -34,13 +42,16 @@ export async function getTournament<T extends EventHandlerRequest>(
     });
   }
 
-  return tournament;
+  return {
+    ...tournament,
+    activeRound: tournament.rounds.length > 0 ? tournament.rounds[0]! : null,
+  };
 }
 
 type TournamentHandler<T extends EventHandlerRequest, D> = (
   event: H3Event<T>,
   data: {
-    tournament: TournamentSelect;
+    tournament: Awaited<ReturnType<typeof getTournament>>;
   },
 ) => Promise<D>;
 

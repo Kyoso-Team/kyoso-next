@@ -17,6 +17,7 @@ import {
   QUALIFIER_SEEDING_METHODS,
   TIEBREAKER_OPTIONS,
   tournamentRoundUpdateSchema,
+  type MappoolSlot,
   type TiebreakerOption,
   type TournamentRoundConfig,
   type TournamentRoundUpdate,
@@ -34,7 +35,7 @@ import {
 } from "~/lib/rounds";
 
 const props = defineProps<{
-  initial?: { name: string; config: TournamentRoundConfig };
+  initial?: { name: string; config: TournamentRoundConfig; mappoolSlots?: MappoolSlot[] };
   hasQualifierRound?: boolean;
 }>();
 
@@ -45,8 +46,12 @@ const emit = defineEmits<{
 const form = useForm({
   schema: tournamentRoundUpdateSchema,
   initialInput: props.initial
-    ? { name: props.initial.name, config: props.initial.config }
-    : { name: "", config: defaultConfigFor("bracket") },
+    ? {
+        name: props.initial.name,
+        config: props.initial.config,
+        mappoolSlots: props.initial.mappoolSlots ?? [],
+      }
+    : { name: "", config: defaultConfigFor("bracket"), mappoolSlots: [] },
   validate: "blur",
   revalidate: "input",
 });
@@ -60,8 +65,13 @@ watch(
   () => typeField.input,
   (type) => {
     if (!type) return;
+    const current = getInput(form);
     reset(form, {
-      initialInput: { name: getInput(form).name, config: defaultConfigFor(type as RoundType) },
+      initialInput: {
+        name: current.name,
+        config: defaultConfigFor(type as RoundType),
+        mappoolSlots: current.mappoolSlots,
+      },
     });
   },
 );
@@ -78,6 +88,14 @@ function removeTiebreaker(index: number) {
 
 function addTiebreaker(value: TiebreakerOption) {
   insert(form, { path: ["config", "tiebreakerPriority"], initialInput: value });
+}
+
+function addMappoolSlot() {
+  insert(form, { path: ["mappoolSlots"], initialInput: { name: "", count: 1 } });
+}
+
+function removeMappoolSlot(index: number) {
+  remove(form, { path: ["mappoolSlots"], at: index });
 }
 
 const submit: SubmitHandler<typeof tournamentRoundUpdateSchema> = async (values) => {
@@ -305,6 +323,49 @@ const submit: SubmitHandler<typeof tournamentRoundUpdateSchema> = async (values)
         </FormField>
       </div>
     </template>
+
+    <div class="flex flex-col gap-1.5">
+      <Field>
+        <FieldLabel>Mappool slots</FieldLabel>
+        <FieldDescription>Named slots with the number of maps in each.</FieldDescription>
+      </Field>
+      <FieldArray :of="form" :path="['mappoolSlots']" v-slot="fieldArray">
+        <div class="flex flex-col gap-1.5">
+          <div v-for="(_, index) in fieldArray.items" :key="index" class="flex items-center gap-2">
+            <FormField :of="form" :path="['mappoolSlots', index, 'name']" v-slot="field">
+              <Input
+                type="text"
+                :id="field.props.name"
+                v-model="field.input"
+                v-bind="field.props"
+                :aria-invalid="isInvalid(field)"
+                placeholder="e.g. NM"
+              />
+            </FormField>
+            <FormField :of="form" :path="['mappoolSlots', index, 'count']" v-slot="field">
+              <Input
+                type="number"
+                :min="1"
+                :id="field.props.name"
+                :model-value="field.input"
+                @update:model-value="
+                  (value) => (field.input = value === '' ? undefined : Number(value))
+                "
+                v-bind="field.props"
+                :aria-invalid="isInvalid(field)"
+              />
+            </FormField>
+            <Button type="button" variant="ghost" size="icon-sm" @click="removeMappoolSlot(index)">
+              <Icon name="fa7-solid:close" />
+            </Button>
+          </div>
+          <Button type="button" variant="ghost" size="sm" @click="addMappoolSlot">
+            <Icon name="fa7-solid:plus" />
+            Add slot
+          </Button>
+        </div>
+      </FieldArray>
+    </div>
 
     <div class="flex items-center justify-between gap-2">
       <div>

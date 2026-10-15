@@ -33,7 +33,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="flex h-dvh flex-col">
+  <div class="scrollbar-thumb-primary/80 scrollbar-track-none flex h-dvh scrollbar-thin flex-col">
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />

@@ -18,9 +18,9 @@ export const useRounds = defineMutation(() => {
         body: input,
         headers: useRequestHeaders(["cookie"]),
       }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Round created.");
-      invalidateRounds();
+      await invalidateRounds();
     },
   });
 
@@ -31,9 +31,9 @@ export const useRounds = defineMutation(() => {
         body: input.data,
         headers: useRequestHeaders(["cookie"]),
       }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Round updated.");
-      invalidateRounds();
+      await invalidateRounds();
     },
   });
 
@@ -43,9 +43,9 @@ export const useRounds = defineMutation(() => {
         method: "DELETE",
         headers: useRequestHeaders(["cookie"]),
       }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Round deleted.");
-      invalidateRounds();
+      await invalidateRounds();
     },
   });
 
