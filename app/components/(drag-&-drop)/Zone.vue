@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { makeDraggable, makeDroppable } from "@vue-dnd-kit/core";
+import { usePointer, useMagicKeys } from "@vueuse/core";
 import { useTemplateRef, type HTMLAttributes } from "vue";
 
 const props = defineProps<{
@@ -37,8 +38,11 @@ const { isDragOver } = makeDroppable(zoneRef, {
   },
 });
 
+const { pointerType } = usePointer();
+
 const { isDragging } = makeDraggable(zoneRef, {
   disabled: computed(() => !props.dragData),
+  modifier: pointerType.value !== "touch" ? { keys: ["ControlLeft"], method: "some" } : undefined,
   activation: {
     distance: 10,
   },
@@ -46,6 +50,8 @@ const { isDragging } = makeDraggable(zoneRef, {
   placementMargins: {},
   data: () => props.dragData?.(),
 });
+
+const { control } = useMagicKeys();
 </script>
 
 <template>
@@ -53,7 +59,12 @@ const { isDragging } = makeDraggable(zoneRef, {
     ref="zoneRef"
     :data-dragging="isDragging"
     :class="
-      cn(props.class, 'zone', isDragOver && 'zone--over', dragData !== undefined && 'cursor-move')
+      cn(
+        props.class,
+        'zone',
+        isDragOver && 'zone--over',
+        dragData !== undefined && control && 'cursor-move',
+      )
     "
   >
     <slot />
@@ -66,6 +77,8 @@ const { isDragging } = makeDraggable(zoneRef, {
   transition:
     background-color 0.15s,
     border-color 0.15s;
+  touch-action: none;
+  user-select: none;
 }
 
 .zone--over {

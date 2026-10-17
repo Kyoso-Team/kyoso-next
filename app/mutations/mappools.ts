@@ -41,7 +41,7 @@ export const useUpdateMappoolSuggestion = defineMutation(() => {
       }),
     onSuccess: async (data, input) => {
       if (data.affectedIds.length > 1) {
-        await queryCache.invalidateQueries({
+        void queryCache.invalidateQueries({
           key: MAPPOOLS_QUERY_KEYS.suggestionsByRound(route.params.slug, input.roundId),
         });
       } else {

@@ -34,6 +34,11 @@ const {
 
 const { update } = useUpdateMappoolSuggestion();
 
+const poolingNote = ref(props.suggestion?.poolingNote ?? "");
+const poolingNoteChanged = computed(
+  () => poolingNote.value !== (props.suggestion?.poolingNote ?? ""),
+);
+
 const showInput = ref(false);
 const suggestedBeatmapId = ref<number>();
 
@@ -77,6 +82,17 @@ const handleModChange = (modBits: number) => {
     suggestionId: props.suggestion.id,
     body: {
       modBits,
+    },
+  });
+};
+
+const savePoolingNote = () => {
+  if (!props.suggestion || !poolingNoteChanged.value) return;
+  update({
+    roundId: props.suggestion.roundId,
+    suggestionId: props.suggestion.id,
+    body: {
+      poolingNote: poolingNote.value,
     },
   });
 };
@@ -203,7 +219,14 @@ const clearSuggestion = () => {
         :mod-bits="suggestion.modBits"
         :overrides="suggestion.statOverrides"
       />
-      <Input class="h-8 text-xs!" placeholder="Anything notable (map type, skillset, etc.)"></Input>
+      <Input
+        v-model.trim="poolingNote"
+        class="h-8 text-xs!"
+        placeholder="Anything notable (map type, skillset, etc.)"
+        autocomplete="off"
+        @blur="savePoolingNote"
+        @keydown.stop
+      />
       <div class="flex h-full items-center justify-end gap-3">
         <Button
           variant="ghost"

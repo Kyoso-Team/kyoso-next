@@ -17,6 +17,7 @@ export const mappoolEntryCreateSchema = createInsertSchema(tournamentMappoolEntr
 
 export const mappoolEntryUpdateSchema = createUpdateSchema(tournamentMappoolEntry, {
   statOverrides: v.optional(statOverrideSchema),
+  poolingNote: v.optional(v.nullable(v.string())),
 });
 export const strippedMappoolEntryUpdateSchema = v.omit(mappoolEntryUpdateSchema, [
   "submittedByUserId",

@@ -449,6 +449,7 @@ export const tournamentMappoolEntry = snakeCase.table(
       clockRate?: number;
     }>(),
     note: t.varchar(),
+    poolingNote: t.varchar(),
     winCondition: WinConditionEnum().notNull().default("scoreV2"),
   }),
   (t) => [

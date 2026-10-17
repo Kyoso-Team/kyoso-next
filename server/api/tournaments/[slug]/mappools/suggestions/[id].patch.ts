@@ -85,6 +85,7 @@ export default defineProtectedTournamentHandler(async (event, { session }) => {
       .update(tournamentMappoolEntry)
       .set({
         ...body,
+        poolingNote: body.poolingNote,
         statOverrides:
           body.modBits !== undefined
             ? {

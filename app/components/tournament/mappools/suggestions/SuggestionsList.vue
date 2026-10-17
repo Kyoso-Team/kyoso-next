@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useMediaQuery } from "@vueuse/core";
+
 import { DEFAULT_MOD_COLOR_MAP } from "~/lib/mods";
 import { addMappoolSuggestionMutation, useRemoveMappoolSuggestion } from "~/mutations/mappools";
-import { MAPPOOLS_QUERY_KEYS, type MappoolSuggestions } from "~/queries/mappools";
+import { type MappoolSuggestions } from "~/queries/mappools";
 import { apiErrorMessage } from "~/utils/api";
 
 import DraftMappoolRow from "./DraftMappoolRow.vue";
@@ -14,7 +16,7 @@ const props = defineProps<{
   mappoolSuggestions: MappoolSuggestions;
 }>();
 
-const route = useRoute("tournaments-slug");
+const isFinePointer = useMediaQuery("(pointer: fine)");
 
 const assignedSuggestions = computed(() => {
   return props.mappoolSuggestions.filter((suggestion) => {
@@ -44,12 +46,9 @@ const cancelAddingSuggestion = () => {
 
 const submitSuggestion = async () => {
   if (!suggestedBeatmapId.value) return;
-  try {
-    await addSuggestion({ beatmapId: suggestedBeatmapId.value, roundId: props.roundId });
+  await addSuggestion({ beatmapId: suggestedBeatmapId.value, roundId: props.roundId }).then(() => {
     cancelAddingSuggestion();
-  } catch {
-    // failure is surfaced through the mutation's `error`, leave the input open
-  }
+  });
 };
 
 const { remove } = useRemoveMappoolSuggestion();
@@ -128,42 +127,59 @@ const openSheet = ref(false);
       <div class="h-full">
         <Button @click="openSheet = true" class="h-full text-xl"> > </Button>
       </div>
-      <SheetContent class="overflow-y-auto sm:max-w-6xl">
+      <SheetContent class="min-h-0 flex-1 overflow-hidden sm:max-w-6xl">
         <SheetHeader class="bg-card sticky top-0 z-15">
           <SheetTitle>Draft mappool</SheetTitle>
-          <SheetDescription> View and edit the mappool here. </SheetDescription>
+          <SheetDescription>
+            View and edit the mappool here.
+            <span
+              v-if="isFinePointer"
+              class="text-muted-foreground flex items-center gap-1.5 font-medium"
+            >
+              Hold
+              <HighlightKey modifier="Ctrl" />
+              to start dragging maps
+            </span>
+          </SheetDescription>
         </SheetHeader>
-        <div class="grid grid-cols-(--draft-rows-grid-cols) gap-2 px-4">
-          <div class="top-0 z-10 col-span-full grid grid-cols-subgrid px-2 text-xs">
-            <span>Banner</span>
-            <span>Slot</span>
-            <span>Mod</span>
-            <span>Artist - Title [Difficulty]</span>
-            <span>SR</span>
-            <span>BPM</span>
-            <span>Length</span>
-            <span>CS</span>
-            <span>AR</span>
-            <span>OD</span>
-            <span class="text-center">Notes</span>
-            <span id="actions"></span>
-          </div>
-          <div
-            v-for="mappoolSlot in mappoolSlots"
-            :key="mappoolSlot.name"
-            class="col-span-full grid grid-cols-subgrid gap-1.5"
-            :style="{
-              color: DEFAULT_MOD_COLOR_MAP[mappoolSlot.name] ?? '#FFFFFF',
-            }"
-          >
-            <DraftMappoolRow
-              v-for="slotNumber in mappoolSlot.count"
-              :key="slotNumber"
-              :suggestion="getAssignedSuggestion(mappoolSlot.name, slotNumber)"
-              :slot="mappoolSlot.name"
-              :position="slotNumber"
-              :round-id="roundId"
-            />
+        <div class="min-h-0 flex-1 overflow-y-auto">
+          <div class="grid grid-cols-(--draft-rows-grid-cols) gap-2 px-4 pb-2">
+            <div
+              class="bg-background sticky top-0 z-10 col-span-full grid grid-cols-subgrid px-2 pb-2 text-xs"
+            >
+              <span>Banner</span>
+              <span>Slot</span>
+              <span>Mod</span>
+              <span>Artist - Title [Difficulty]</span>
+              <span>SR</span>
+              <span>BPM</span>
+              <span>Length</span>
+              <span>CS</span>
+              <span>AR</span>
+              <span>OD</span>
+              <span class="text-center">Notes</span>
+              <span id="actions"></span>
+            </div>
+            <div
+              v-for="mappoolSlot in mappoolSlots"
+              :key="mappoolSlot.name"
+              class="col-span-full grid grid-cols-subgrid gap-1.5"
+              :style="{
+                color: DEFAULT_MOD_COLOR_MAP[mappoolSlot.name] ?? '#FFFFFF',
+              }"
+            >
+              <DraftMappoolRow
+                v-for="slotNumber in mappoolSlot.count"
+                :key="
+                  getAssignedSuggestion(mappoolSlot.name, slotNumber)?.id ??
+                  `empty-${mappoolSlot.name}-${slotNumber}`
+                "
+                :suggestion="getAssignedSuggestion(mappoolSlot.name, slotNumber)"
+                :slot="mappoolSlot.name"
+                :position="slotNumber"
+                :round-id="roundId"
+              />
+            </div>
           </div>
         </div>
       </SheetContent>
