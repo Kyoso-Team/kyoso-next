@@ -222,7 +222,7 @@ const clearSuggestion = () => {
       <Input
         v-model.trim="poolingNote"
         class="h-8 text-xs!"
-        placeholder="Anything notable (map type, skillset, etc.)"
+        placeholder="Anything notable..."
         autocomplete="off"
         @blur="savePoolingNote"
         @keydown.stop
