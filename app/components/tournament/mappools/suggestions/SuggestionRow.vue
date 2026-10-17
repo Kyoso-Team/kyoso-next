@@ -117,6 +117,9 @@ const { isDragging } = makeDraggable(dragItem, {
             :disabled="isAssigned"
             >{{ mod }}</Button
           >
+          <span class="ml-1 text-[10px] font-bold" v-if="entry.statOverrides?.clockRate"
+            >({{ entry.statOverrides?.clockRate }}x)</span
+          >
         </PopoverTrigger>
         <PopoverContent class="p-2">
           <LazyToggleGroup

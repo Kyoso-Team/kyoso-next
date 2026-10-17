@@ -67,7 +67,7 @@ const openSheet = ref(false);
 
 <template>
   <Sheet :open="openSheet" @update:open="(open) => (openSheet = open)">
-    <div class="mt-2 flex min-h-0 flex-1 items-start justify-between">
+    <div class="mt-2 flex min-h-0 flex-1 items-start justify-between gap-5">
       <div class="flex max-h-full min-h-0 w-fit flex-col gap-2">
         <h2 class="text-xl">Suggestions</h2>
         <div class="min-h-0 flex-1 overflow-auto">
@@ -128,7 +128,7 @@ const openSheet = ref(false);
       <div class="h-full">
         <Button @click="openSheet = true" class="h-full text-xl"> > </Button>
       </div>
-      <SheetContent class="overflow-y-auto sm:max-w-5xl">
+      <SheetContent class="overflow-y-auto sm:max-w-6xl">
         <SheetHeader class="bg-card sticky top-0 z-15">
           <SheetTitle>Draft mappool</SheetTitle>
           <SheetDescription> View and edit the mappool here. </SheetDescription>
@@ -145,7 +145,8 @@ const openSheet = ref(false);
             <span>CS</span>
             <span>AR</span>
             <span>OD</span>
-            <span></span>
+            <span class="text-center">Notes</span>
+            <span id="actions"></span>
           </div>
           <div
             v-for="mappoolSlot in mappoolSlots"
@@ -166,10 +167,6 @@ const openSheet = ref(false);
           </div>
         </div>
       </SheetContent>
-
-      <!-- <div class="flex w-1/4 flex-col items-center gap-2">
-      <h2 class="text-xl">Pool Assembly</h2>
-    </div> -->
     </div>
   </Sheet>
 </template>

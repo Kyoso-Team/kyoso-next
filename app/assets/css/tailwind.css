@@ -8,7 +8,8 @@
 
 :root {
   --suggestion-grid-cols: 90px 150px minmax(150px, 400px) 80px 200px 220px 70px;
-  --draft-rows-grid-cols: 90px 50px 50px minmax(150px, 400px) 46px 38px 53px 30px 30px 30px 70px;
+  --draft-rows-grid-cols: 90px 40px 50px minmax(150px, 400px) 46px 38px 53px 30px 30px 30px 250px
+    40px;
   --background: oklch(0.9859 0.0076 48.6568);
   --foreground: oklch(0.4279 0.0265 46.6194);
   --card: oklch(1 0 0);

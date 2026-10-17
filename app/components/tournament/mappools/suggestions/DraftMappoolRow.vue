@@ -143,12 +143,19 @@ const clearSuggestion = () => {
       </div>
     </div>
     <template v-else>
-      <NuxtImg
-        v-if="suggestion.beatmap.beatmapsetId"
-        :src="buildUrl.beatmapsetCover(suggestion.beatmap.beatmapsetId)"
-        alt=""
-        class="h-8 w-16 shrink-0 rounded object-cover"
-      />
+      <div v-if="suggestion.beatmap.beatmapsetId" class="relative shrink-0">
+        <NuxtImg
+          :src="buildUrl.beatmapsetCover(suggestion.beatmap.beatmapsetId)"
+          alt=""
+          class="h-8 w-16 rounded object-cover"
+        />
+        <span
+          v-if="suggestion.statOverrides?.clockRate"
+          class="absolute inset-x-0 bottom-0 w-16 rounded-b bg-black/70 px-0.5 text-center text-[10px] leading-3 font-bold text-white"
+        >
+          {{ suggestion.statOverrides.clockRate }}x
+        </span>
+      </div>
       <span class="content-center"> {{ suggestion.slot }}{{ suggestion.position }} </span>
       <div>
         <Popover>
@@ -196,6 +203,7 @@ const clearSuggestion = () => {
         :mod-bits="suggestion.modBits"
         :overrides="suggestion.statOverrides"
       />
+      <Input class="h-8 text-xs!" placeholder="Anything notable (map type, skillset, etc.)"></Input>
       <div class="flex h-full items-center justify-end gap-3">
         <Button
           variant="ghost"

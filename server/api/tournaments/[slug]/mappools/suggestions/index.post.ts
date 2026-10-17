@@ -1,8 +1,10 @@
 import { Result } from "better-result";
+import { getModsEnum } from "osu-web.js";
 import * as v from "valibot";
 import { db } from "~~/server/database/client";
 import { beatmaps, osuBeatmapFile, tournamentMappoolEntry } from "~~/server/database/schema";
 import { beatmapService } from "~~/server/services/beatmap";
+import { isOsuMod } from "~~/shared/osu/mods";
 import { mappoolEntryCreateSchema } from "~~/shared/validation/tournament/mappools";
 
 const ensureBeatmap = async (osuBeatmapId: number) => {
@@ -32,6 +34,7 @@ const ensureBeatmap = async (osuBeatmapId: number) => {
     return Result.ok({
       beatmap: parsedBeatmap,
       fileContents: beatmapFileContent,
+      checksum,
     });
   });
 
@@ -42,7 +45,7 @@ const ensureBeatmap = async (osuBeatmapId: number) => {
     });
   }
 
-  const { beatmap, fileContents } = result.value;
+  const { beatmap, fileContents, checksum } = result.value;
 
   return await db.transaction(async (tx) => {
     const [newBeatmapRecord] = await tx
@@ -62,6 +65,7 @@ const ensureBeatmap = async (osuBeatmapId: number) => {
         cs: beatmap.difficulty.circleSize,
         od: beatmap.difficulty.overallDifficulty,
         hp: beatmap.difficulty.drainRate,
+        checksum,
       })
       .onConflictDoNothing()
       .returning();
@@ -112,5 +116,7 @@ export default defineProtectedTournamentHandler(async (event, { session }) => {
   await db.insert(tournamentMappoolEntry).values({
     ...mappoolEntry,
     beatmapId,
+    modBits:
+      mappoolEntry.slot && isOsuMod(mappoolEntry.slot) ? getModsEnum([mappoolEntry.slot]) : 0,
   });
 });

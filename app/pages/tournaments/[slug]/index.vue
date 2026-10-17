@@ -2,6 +2,7 @@
 import dayjs from "dayjs";
 import { useRoute } from "vue-router";
 
+import { $fetch } from "#build/fetch";
 import { REGISTRATIONS_QUERY_KEYS } from "~/queries/registrations";
 
 const slug = useRoute("tournaments-slug").params.slug;

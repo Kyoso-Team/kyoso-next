@@ -406,9 +406,13 @@ export const beatmaps = snakeCase.table(
     maxCombo: t.integer().notNull(),
     bpm: t.real().notNull(),
     hitLength: t.integer().notNull(),
+    checksum: t.varchar().notNull(),
     ...timestampColumns(),
   }),
-  (t) => [index("idx_beatmap_beatmapId").on(t.beatmapId).where(isNotNull(t.beatmapId))],
+  (t) => [
+    index("idx_beatmap_beatmapId").on(t.beatmapId).where(isNotNull(t.beatmapId)),
+    index("idx_beatmap_checksum").on(t.checksum),
+  ],
 );
 
 export const osuBeatmapFile = snakeCase.table("osu_beatmap_file", (t) => ({

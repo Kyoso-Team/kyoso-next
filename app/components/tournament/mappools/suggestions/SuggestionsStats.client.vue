@@ -65,9 +65,9 @@ const statRows = computed(() => {
 
   const { cs, ar, od } = stats.value;
   return [
-    { key: "cs", label: "CS", base: localEdits.cs, effective: cs, digits: 2 },
-    { key: "ar", label: "AR", base: localEdits.ar, effective: ar, digits: 2 },
-    { key: "od", label: "OD", base: localEdits.od, effective: od, digits: 2 },
+    { key: "cs", label: "CS", base: localEdits.cs!, effective: cs, digits: 2 },
+    { key: "ar", label: "AR", base: localEdits.ar!, effective: ar, digits: 2 },
+    { key: "od", label: "OD", base: localEdits.od!, effective: od, digits: 2 },
   ] as const;
 });
 
@@ -208,7 +208,7 @@ const resetEdits = () => {
               @update:model-value="(value) => setStat('clockRate', value!)"
             />
             <span
-              class="text-primary flex w-full items-center justify-between gap-1 px-2 text-xs font-medium"
+              class="text-primary flex w-full items-center justify-between gap-1 text-xs font-medium"
               aria-hidden="true"
             >
               <span>{{ clockRateBounds.min }}</span>
