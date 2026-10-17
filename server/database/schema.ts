@@ -442,6 +442,7 @@ export const tournamentMappoolEntry = snakeCase.table(
     slot: t.varchar(),
     position: t.integer(),
     modBits: t.integer().notNull().default(0),
+    isFm: t.boolean().notNull().default(false),
     statOverrides: t.jsonb().$type<{
       cs?: number;
       ar?: number;

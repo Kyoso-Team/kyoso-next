@@ -116,6 +116,7 @@ export default defineProtectedTournamentHandler(async (event, { session }) => {
   await db.insert(tournamentMappoolEntry).values({
     ...mappoolEntry,
     beatmapId,
+    isFm: mappoolEntry.slot === "FM",
     modBits:
       mappoolEntry.slot && isOsuMod(mappoolEntry.slot) ? getModsEnum([mappoolEntry.slot]) : 0,
   });

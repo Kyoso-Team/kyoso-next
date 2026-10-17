@@ -39,13 +39,21 @@ const saveNote = () => {
 };
 
 const modBits = toRef(() => props.entry.modBits);
+const isFm = toRef(() => props.entry.isFm);
 const saveMods = (modBits: number) => {
   saveSuggestion({
     modBits,
   });
 };
 
+const saveFm = () => {
+  saveSuggestion({
+    isFm: !props.entry.isFm,
+  });
+};
+
 const mod = computed(() => {
+  if (isFm.value) return "FM";
   if (modBits.value === 0) return "NM";
   return getEnumMods(modBits.value)
     .map((m) => m)
@@ -104,7 +112,26 @@ const { isDragging } = makeDraggable(dragItem, {
       </span>
     </div>
 
-    <div>
+    <div class="flex items-center gap-1">
+      <Button
+        variant="outline"
+        size="icon-xs"
+        :style="{
+          '--mod-color': DEFAULT_MOD_COLOR_MAP.FM,
+        }"
+        :class="
+          cn(
+            'text-[10px]',
+            isFm
+              ? 'border-(--mod-color)! bg-(--mod-color)/40! text-(--mod-color)!'
+              : 'bg-(--mod-color)/10! text-(--mod-color)! opacity-60 transition-colors hover:bg-(--mod-color)/30!',
+          )
+        "
+        :disabled="isAssigned"
+        title="Toggle freemod"
+        @click="saveFm"
+        >FM</Button
+      >
       <Popover>
         <PopoverTrigger as-child>
           <Button
@@ -114,7 +141,7 @@ const { isDragging } = makeDraggable(dragItem, {
               '--mod-color': `${DEFAULT_MOD_COLOR_MAP[mod] ?? '#FFFFFF'}`,
             }"
             class="text-shadow bg-(--mod-color)/30! text-xs text-(--mod-color)! hover:bg-(--mod-color)/50!"
-            :disabled="isAssigned"
+            :disabled="isAssigned || isFm"
             >{{ mod }}</Button
           >
           <span class="ml-1 text-[10px] font-bold" v-if="entry.statOverrides?.clockRate"
@@ -145,7 +172,7 @@ const { isDragging } = makeDraggable(dragItem, {
     <div>
       <TournamentMappoolsSuggestionsStats
         :beatmap="entry.beatmap"
-        :mod-bits="entry.modBits"
+        :mod-bits="isFm ? 0 : entry.modBits"
         :stat-overrides="entry.statOverrides ?? undefined"
         @update:stat-overrides="(o) => saveSuggestion({ statOverrides: o })"
       />

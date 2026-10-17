@@ -18,7 +18,9 @@ const props = defineProps<{
 }>();
 
 const modBits = toRef(() => props.suggestion?.modBits ?? 0);
+const isFm = toRef(() => props.suggestion?.isFm ?? false);
 const mod = computed(() => {
+  if (isFm.value) return "FM";
   if (modBits.value === 0) return "NM";
   return getEnumMods(modBits.value)
     .map((m) => m)
@@ -82,6 +84,17 @@ const handleModChange = (modBits: number) => {
     suggestionId: props.suggestion.id,
     body: {
       modBits,
+    },
+  });
+};
+
+const handleFmToggle = () => {
+  if (!props.suggestion) return;
+  update({
+    roundId: props.suggestion.roundId,
+    suggestionId: props.suggestion.id,
+    body: {
+      isFm: !props.suggestion.isFm,
     },
   });
 };
@@ -173,7 +186,25 @@ const clearSuggestion = () => {
         </span>
       </div>
       <span class="content-center"> {{ suggestion.slot }}{{ suggestion.position }} </span>
-      <div>
+      <div class="flex items-center gap-1">
+        <Button
+          variant="outline"
+          size="icon-xs"
+          :style="{
+            '--mod-color': DEFAULT_MOD_COLOR_MAP.FM,
+          }"
+          :class="
+            cn(
+              'text-[10px]',
+              isFm
+                ? 'border-(--mod-color)! bg-(--mod-color)/40! text-(--mod-color)!'
+                : 'bg-(--mod-color)/30! text-(--mod-color)! opacity-60 hover:bg-(--mod-color)/50!',
+            )
+          "
+          title="Toggle freemod"
+          @click="handleFmToggle"
+          >FM</Button
+        >
         <Popover>
           <PopoverTrigger as-child>
             <Button
@@ -184,6 +215,7 @@ const clearSuggestion = () => {
                 backgroundColor: `${DEFAULT_MOD_COLOR_MAP[mod] ?? '#FFFFFF'}30`,
                 color: `${DEFAULT_MOD_COLOR_MAP[mod] ?? '#FFFFFF'}`,
               }"
+              :disabled="isFm"
               >{{ mod }}</Button
             >
           </PopoverTrigger>
@@ -216,7 +248,7 @@ const clearSuggestion = () => {
 
       <DraftMappoolStats
         :beatmap="suggestion.beatmap"
-        :mod-bits="suggestion.modBits"
+        :mod-bits="isFm ? 0 : suggestion.modBits"
         :overrides="suggestion.statOverrides"
       />
       <Input
