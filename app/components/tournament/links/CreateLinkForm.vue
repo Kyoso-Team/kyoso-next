@@ -31,7 +31,7 @@ const submit: SubmitHandler<typeof tournamentLinkItemSchema> = async (values) =>
         <Field :data-invalid="isInvalid(field)">
           <FieldContent>
             <FieldLabel required :for="field.props.name">Label</FieldLabel>
-            <FieldDescription> What is this date for? </FieldDescription>
+            <FieldDescription> What is this link for? </FieldDescription>
           </FieldContent>
           <Input
             required

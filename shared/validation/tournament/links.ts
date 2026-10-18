@@ -5,7 +5,7 @@ export const TOURNAMENT_LINK_TYPES = [
   "forum_post",
   "twitch",
   "discord",
-  "x/twitter",
+  "twitter",
   "youtube",
   "challonge",
   "other",

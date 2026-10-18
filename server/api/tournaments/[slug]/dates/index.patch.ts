@@ -22,10 +22,12 @@ export default defineTournamentAccessHandler(async (event, { tournament }) => {
     await db
       .update(tournaments)
       .set({
-        playerRegistrationStart: toDatabaseDateTime(playerRegs?.start),
-        playerRegistrationEnd: toDatabaseDateTime(playerRegs?.end),
-        staffRegistrationStart: toDatabaseDateTime(staffRegs?.start),
-        staffRegistrationEnd: toDatabaseDateTime(staffRegs?.end),
+        playerRegistrationStart: playerRegs?.start
+          ? toDatabaseDateTime(playerRegs?.start)
+          : undefined,
+        playerRegistrationEnd: playerRegs?.end ? toDatabaseDateTime(playerRegs?.end) : undefined,
+        staffRegistrationStart: staffRegs?.start ? toDatabaseDateTime(staffRegs?.start) : undefined,
+        staffRegistrationEnd: staffRegs?.end ? toDatabaseDateTime(staffRegs?.end) : undefined,
       })
       .where(eq(tournaments.slug, tournament.slug));
   }
