@@ -97,6 +97,7 @@ const isSettingsPage = computed(() => route.path.includes("/settings"));
                   <SidebarMenuButton
                     size="sm"
                     as-child
+                    class="transition-colors"
                     :tooltip="item.label"
                     :is-active="route.path.endsWith(kebabCase(item.label).replace(' ', ''))"
                   >

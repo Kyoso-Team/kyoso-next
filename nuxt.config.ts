@@ -6,17 +6,6 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 5,
   },
-  typescript: {
-    tsConfig: {
-      compilerOptions: {
-        // osu-downloader ships lib/index.d.ts but its package.json "exports"
-        // lacks a "types" condition, so TS can't resolve the typings.
-        paths: {
-          "osu-downloader": ["../node_modules/osu-downloader/lib/index.d.ts"],
-        },
-      },
-    },
-  },
   imports: {
     presets: [
       {
