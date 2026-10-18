@@ -85,7 +85,6 @@ const handleDelete = async () => {
               <div class="flex items-center gap-2">
                 <span class="font-medium">{{ round.name }}</span>
                 <Badge :variant="ROUND_TYPE_META[round.config.type].badge">
-                  <Icon :name="ROUND_TYPE_META[round.config.type].icon" />
                   {{ ROUND_TYPE_META[round.config.type].label }}
                 </Badge>
                 <Icon

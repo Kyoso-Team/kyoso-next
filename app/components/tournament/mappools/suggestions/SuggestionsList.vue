@@ -145,11 +145,11 @@ const openSheet = ref(false);
         <div class="min-h-0 flex-1 overflow-y-auto">
           <div class="grid grid-cols-(--draft-rows-grid-cols) gap-2 px-4 pb-2">
             <div
-              class="bg-background sticky top-0 z-10 col-span-full grid grid-cols-subgrid px-2 pb-2 text-xs"
+              class="bg-background sticky top-0 z-10 col-span-full grid grid-cols-subgrid border-b-2 px-2 pb-2 text-xs"
             >
               <span>Banner</span>
               <span>Slot</span>
-              <span>Mod</span>
+              <span class="text-center">Mod</span>
               <span>Artist - Title [Difficulty]</span>
               <span>SR</span>
               <span>BPM</span>
@@ -182,6 +182,9 @@ const openSheet = ref(false);
             </div>
           </div>
         </div>
+        <SheetFooter>
+          <Button>Finalize</Button>
+        </SheetFooter>
       </SheetContent>
     </div>
   </Sheet>

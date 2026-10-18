@@ -52,17 +52,14 @@ const cancelAddingSuggestion = () => {
 
 const submitSuggestion = async () => {
   if (!suggestedBeatmapId.value) return;
-  try {
-    await addSuggestion({
-      beatmapId: suggestedBeatmapId.value,
-      roundId: props.roundId,
-      slot: props.slot,
-      position: props.position,
-    });
+  await addSuggestion({
+    beatmapId: suggestedBeatmapId.value,
+    roundId: props.roundId,
+    slot: props.slot,
+    position: props.position,
+  }).then(() => {
     cancelAddingSuggestion();
-  } catch {
-    // failure is surfaced through the mutation's `error`, leave the input open
-  }
+  });
 };
 
 const handleDrop = (val: { suggestionId: number; roundId: number }) => {
@@ -186,7 +183,7 @@ const clearSuggestion = () => {
         </span>
       </div>
       <span class="content-center"> {{ suggestion.slot }}{{ suggestion.position }} </span>
-      <div class="flex items-center gap-1">
+      <div class="flex items-center justify-center gap-1">
         <Button
           variant="outline"
           size="icon-xs"
