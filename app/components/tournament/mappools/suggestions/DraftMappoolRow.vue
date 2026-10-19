@@ -20,7 +20,6 @@ const props = defineProps<{
 const modBits = toRef(() => props.suggestion?.modBits ?? 0);
 const isFm = toRef(() => props.suggestion?.isFm ?? false);
 const mod = computed(() => {
-  if (isFm.value) return "FM";
   if (modBits.value === 0) return "NM";
   return getEnumMods(modBits.value)
     .map((m) => m)
@@ -212,7 +211,6 @@ const clearSuggestion = () => {
                 backgroundColor: `${DEFAULT_MOD_COLOR_MAP[mod] ?? '#FFFFFF'}30`,
                 color: `${DEFAULT_MOD_COLOR_MAP[mod] ?? '#FFFFFF'}`,
               }"
-              :disabled="isFm"
               >{{ mod }}</Button
             >
           </PopoverTrigger>
@@ -245,7 +243,7 @@ const clearSuggestion = () => {
 
       <DraftMappoolStats
         :beatmap="suggestion.beatmap"
-        :mod-bits="isFm ? 0 : suggestion.modBits"
+        :mod-bits="suggestion.modBits"
         :overrides="suggestion.statOverrides"
       />
       <Input

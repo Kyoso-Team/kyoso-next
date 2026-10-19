@@ -53,7 +53,6 @@ const saveFm = () => {
 };
 
 const mod = computed(() => {
-  if (isFm.value) return "FM";
   if (modBits.value === 0) return "NM";
   return getEnumMods(modBits.value)
     .map((m) => m)
@@ -141,7 +140,7 @@ const { isDragging } = makeDraggable(dragItem, {
               '--mod-color': `${DEFAULT_MOD_COLOR_MAP[mod] ?? '#FFFFFF'}`,
             }"
             class="text-shadow bg-(--mod-color)/30! text-xs text-(--mod-color)! hover:bg-(--mod-color)/50!"
-            :disabled="isAssigned || isFm"
+            :disabled="isAssigned"
             >{{ mod }}</Button
           >
           <span class="ml-1 text-[10px] font-bold" v-if="entry.statOverrides?.clockRate"
@@ -172,7 +171,7 @@ const { isDragging } = makeDraggable(dragItem, {
     <div>
       <TournamentMappoolsSuggestionsStats
         :beatmap="entry.beatmap"
-        :mod-bits="isFm ? 0 : entry.modBits"
+        :mod-bits="entry.modBits"
         :stat-overrides="entry.statOverrides ?? undefined"
         @update:stat-overrides="(o) => saveSuggestion({ statOverrides: o })"
       />
