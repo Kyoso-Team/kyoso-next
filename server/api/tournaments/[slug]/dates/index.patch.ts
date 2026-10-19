@@ -1,17 +1,18 @@
-import { parseDate } from "@internationalized/date";
 import { eq, sql } from "drizzle-orm";
 import * as v from "valibot";
 import { db } from "~~/server/database/client";
 import { tournamentDates, tournaments } from "~~/server/database/schema";
 import type { Nullish } from "~~/shared/types";
-import { parseUTCDateTime } from "~~/shared/utils/date";
+import { parseUTCDate, parseUTCDateTime } from "~~/shared/utils/date";
 import { tournamentDatesFormSchema } from "~~/shared/validation/tournament/dates";
 
 const toDatabaseDateTime = (value: Nullish<string>) =>
-  value ? parseUTCDateTime(value).toDate() : null;
+  value ? new Date(parseUTCDateTime(value).epochMilliseconds) : null;
 
 const toDatabaseDate = (value: string): Date =>
-  value.includes("T") ? parseUTCDateTime(value).toDate() : parseDate(value).toDate("UTC");
+  value.includes("T")
+    ? new Date(parseUTCDateTime(value).epochMilliseconds)
+    : new Date(parseUTCDate(value).toZonedDateTime("UTC").epochMilliseconds);
 
 export default defineTournamentAccessHandler(async (event, { tournament }) => {
   const body = await readValidatedBody(event, (body) => v.parse(tournamentDatesFormSchema, body));

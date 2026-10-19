@@ -23,7 +23,6 @@
     "@better-auth/drizzle-adapter": "^1.7.5",
     "@comark/nuxt": "0.7.0",
     "@formisch/vue": "^1.0.0",
-    "@internationalized/date": "^3.12.3",
     "@lucide/vue": "^1.55.0",
     "@nuxt/fonts": "^1.0.1",
     "@nuxt/icon": "2.5.1",

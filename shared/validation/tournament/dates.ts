@@ -31,7 +31,7 @@ export const tournamentDateCreateSchema = v.pipe(
   tournamentDateFields,
   v.partialCheck(
     [["start"], ["end"]],
-    (input) => parseUTCDate(input.start).compare(parseUTCDate(input.end)) <= 0,
+    (input) => Temporal.PlainDate.compare(parseUTCDate(input.start), parseUTCDate(input.end)) <= 0,
     "Start date must be before end date.",
   ),
 );
@@ -53,7 +53,7 @@ export type TournamentDates = v.InferOutput<typeof tournamentDatesSchema>;
 
 const isValidDateRange = (start: string | null | undefined, end: string | null | undefined) => {
   if (start == null || end == null) return true;
-  return parseUTCDateTime(start).compare(parseUTCDateTime(end)) <= 0;
+  return Temporal.ZonedDateTime.compare(parseUTCDateTime(start), parseUTCDateTime(end)) <= 0;
 };
 
 export const tournamentDatesFormSchema = v.pipe(

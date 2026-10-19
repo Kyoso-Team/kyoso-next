@@ -13,7 +13,6 @@ import {
   handleSubmit,
   getDeepErrors,
 } from "@formisch/vue";
-import { today } from "@internationalized/date";
 import { toast } from "vue-sonner";
 import {
   tournamentDatesFormSchema,
@@ -28,6 +27,7 @@ import {
   fromDateTimeLocalUTC,
   toCalendarDateString,
   toDateTimeLocalUTC,
+  todayUTC,
 } from "~/lib/date";
 import { tournamentBySlugQuery } from "~/queries/tournament";
 
@@ -249,7 +249,7 @@ const handleAddDate = (date: TournamentDateCreate) => {
           <DialogTitle>Add date</DialogTitle>
         </DialogHeader>
         <CreateDateForm
-          :min-date="toCalendarDateString(playerRegsEndTime.input) || today('UTC').toString()"
+          :min-date="toCalendarDateString(playerRegsEndTime.input) || todayUTC()"
           @submit="handleAddDate"
         />
       </DialogContent>
