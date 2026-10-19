@@ -57,6 +57,7 @@
         "vue-sonner": "^2.0.9",
       },
       "devDependencies": {
+        "@golar/vue": "^0.1.11",
         "@iconify-json/fa-solid": "^1.2.2",
         "@iconify-json/fa7-solid": "^1.2.5",
         "@pinia/colada-devtools": "^2.0.1",
@@ -64,6 +65,7 @@
         "@total-typescript/ts-reset": "^0.6.1",
         "@types/bun": "^1.4.1",
         "drizzle-kit": "^1.0.0-rc.4",
+        "golar": "^0.1.11",
         "husky": "^9.1.7",
         "oxfmt": "^0.73.0",
         "oxlint": "^1.81.0",
@@ -330,6 +332,26 @@
     "@floating-ui/vue": ["@floating-ui/vue@2.0.1", "", { "dependencies": { "@floating-ui/dom": "^1.8.0", "@floating-ui/utils": "^0.2.12" }, "peerDependencies": { "vue": ">=3.3.0" } }, "sha512-043dyEKD9TDSfz080YH2vobubgg+NIo/9Fw4RAl7sEMpD8Am1DNrrSTl/GpMBjyGHoD/FbJY2QLawY+HSQsEIA=="],
 
     "@formisch/vue": ["@formisch/vue@1.1.0", "", { "peerDependencies": { "typescript": ">=5 <8", "valibot": ">=1.4.1 <2", "vue": ">=3.3 <4" }, "optionalPeers": ["typescript"] }, "sha512-g7KJlrqviu93qzwYiLDP6RcoWEgzb0ZdpfUPp1EdkjOl+QhUWcniXSZPlbtoa9etb8GR3j8rrC60vsEBs7O8hQ=="],
+
+    "@golar/darwin-arm64": ["@golar/darwin-arm64@0.1.11", "", { "os": "darwin", "cpu": "arm64" }, "sha512-Qv+/v8cQpXeiJYqFHRjNqgj4sBbt1jDp+xpdWlvH+2KtQouX7PtLQa9QO7xxdP6zzQsdvDZ/uLxD7RwnKLvsHg=="],
+
+    "@golar/darwin-x64": ["@golar/darwin-x64@0.1.11", "", { "os": "darwin", "cpu": "x64" }, "sha512-d/H0scCx0xe9mxx8LFDR32H/QYIeEj+sTVOi4/r2QRpHrKjOwNvVj8OCD40ZpB3V0+kNrGUqKDlY9lo00CTNmw=="],
+
+    "@golar/linux-arm64": ["@golar/linux-arm64@0.1.11", "", { "os": "linux", "cpu": "arm64" }, "sha512-mQ4ako3nSiSj9X/4P2SEMBeOcnWTBYY5TXR56sBZ35tNLlYPsyZ5lRjko7KB+vN/1XTbZY8HrzH/i1HRgX4y4A=="],
+
+    "@golar/linux-arm64-musl": ["@golar/linux-arm64-musl@0.1.11", "", { "os": "linux", "cpu": "arm64" }, "sha512-NOkZL+K/SUxvm7Ux4hNKUpichyMzFUI6FmEXmalFa9z6N+g3jTgs+X34Pi/uMzUKmOemeJjac85aLuvn+xbKIg=="],
+
+    "@golar/linux-x64": ["@golar/linux-x64@0.1.11", "", { "os": "linux", "cpu": "x64" }, "sha512-aepPjJMM/g+T+xVvp68UvdF3rhNwkeVq88TP/mODEH/00bUM61cCfc4F6c3ttW3h8ukGnOOIPOU4zCTLc+SqNg=="],
+
+    "@golar/linux-x64-musl": ["@golar/linux-x64-musl@0.1.11", "", { "os": "linux", "cpu": "x64" }, "sha512-cJ7M6214bbaFrcb9U2HUblHJxJ6+du3m9KynVyWZfval7VtemcnYqhM8OtXFM23ZLMfIoopxPp9fmdfjPYaKOA=="],
+
+    "@golar/util": ["@golar/util@0.1.11", "", {}, "sha512-5aMgT1NkA877w062TU+vnOygV7Eja+G6fKV/xSkewIeRVRq7M53/KoXjQmWgJRALzofweY+8YH1j/LKOFEMGYQ=="],
+
+    "@golar/volar": ["@golar/volar@0.1.11", "", { "dependencies": { "@volar/language-core": "^2.4.28", "golar": "0.1.11" } }, "sha512-y91LXEgDZZG88hV+wI1VLpHG0/gu5h7C1i3JcivEqlLZ37A3gUMPxh7W3NR+IvDOw/VELuI5pR+xNT9HuOclEQ=="],
+
+    "@golar/vue": ["@golar/vue@0.1.11", "", { "dependencies": { "@golar/util": "0.1.11", "@golar/volar": "0.1.11", "@vue/compiler-dom": "^3.5.44", "@vue/language-core": "3.3.13" } }, "sha512-1qIPEMOWd/80vvMZS9KYQ9biUNfBRC+VvxHHxP/QopYCtDsXjDDUqlzztYZuXY4khsZt02tR5BfS+5SV+CPBjw=="],
+
+    "@golar/win32-x64": ["@golar/win32-x64@0.1.11", "", { "os": "win32", "cpu": "x64" }, "sha512-uSFxpQ+24aQY7wvDW7DG7rJxCqv9Kga1cMhn+uyeZsQOF4gybX0PqZLkxx8rUziz/SVt5/pXmo70/1XMU+VGOg=="],
 
     "@iconify-json/fa-solid": ["@iconify-json/fa-solid@1.2.2", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-V8TDk62dGswAwbWwoSTnaoiTVEfQyjLCq4/TPmI29evFb9GwPyU0OGX4+BdQMGsDDzk8ByR81RjR618FtELSaw=="],
 
@@ -1242,6 +1264,8 @@
     "glob-parent": ["glob-parent@5.1.2", "", { "dependencies": { "is-glob": "^4.0.1" } }, "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow=="],
 
     "globby": ["globby@16.2.4", "", { "dependencies": { "@sindresorhus/merge-streams": "^4.0.0", "fast-glob": "^3.3.3", "ignore": "^7.0.5", "is-path-inside": "^4.0.0", "micromatch": "^4.0.8", "slash": "^5.1.0", "unicorn-magic": "^0.4.0" } }, "sha512-c8B/VNLmxRcmqqenRA9t+9IyOjf9+V6lTxPaUJLqOCONdQkWZ0ETYgX0qbtJqPsgCNusT9MZ5Jeidw8Eb9tn2g=="],
+
+    "golar": ["golar@0.1.11", "", { "dependencies": { "@golar/util": "0.1.11", "detect-libc": "^2.1.2", "tinyglobby": "^0.2.15" }, "optionalDependencies": { "@golar/darwin-arm64": "0.1.11", "@golar/darwin-x64": "0.1.11", "@golar/linux-arm64": "0.1.11", "@golar/linux-arm64-musl": "0.1.11", "@golar/linux-x64": "0.1.11", "@golar/linux-x64-musl": "0.1.11", "@golar/win32-x64": "0.1.11" }, "bin": { "golar": "./dist/bin.js" } }, "sha512-Bis1i8mcR8319GEvMQcOXfN+jvsuQY3aUB5h5jlo7pA2r9/xSzye0G1xBXm408GvIO/6PHEX2B9/7c4PH8bnMA=="],
 
     "gopd": ["gopd@1.2.0", "", {}, "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg=="],
 

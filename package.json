@@ -8,9 +8,10 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
     "test": "vitest",
     "lint:fix": "oxlint --fix",
-    "check": "bun run --parallel oxlint oxfmt",
+    "check": "bun run --parallel oxlint oxfmt typecheck",
     "prepare": "husky",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
@@ -70,6 +71,7 @@
     "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
+    "@golar/vue": "^0.1.11",
     "@iconify-json/fa-solid": "^1.2.2",
     "@iconify-json/fa7-solid": "^1.2.5",
     "@pinia/colada-devtools": "^2.0.1",
@@ -77,6 +79,7 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/bun": "^1.4.1",
     "drizzle-kit": "^1.0.0-rc.4",
+    "golar": "^0.1.11",
     "husky": "^9.1.7",
     "oxfmt": "^0.73.0",
     "oxlint": "^1.81.0",
