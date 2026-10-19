@@ -45,8 +45,8 @@ const items = [
     icon: "fa7-solid:images",
   },
   {
-    href: `/tournaments/${route.params.slug}/staff-applications`,
-    label: "Staff Applications",
+    href: `/tournaments/${route.params.slug}/staff`,
+    label: "Staff",
     icon: "fa7-solid:users",
   },
   {
