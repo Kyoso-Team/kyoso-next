@@ -5,19 +5,24 @@ import type { BetterAuthOptions } from "better-auth/types";
 import { inArray } from "drizzle-orm";
 import { API, Ruleset } from "osu-api-v2-js";
 
-import type { AuthUser } from "#nuxt-better-auth";
-
-import { db } from "./database/client";
-import { badges, userRanks, userAwardedBadges } from "./database/schema";
-import { accounts, sessions, users, verifications } from "./database/schema";
-import { osuClient } from "./osu-client";
+import { db } from "./database/client.ts";
+import {
+  badges,
+  userRanks,
+  userAwardedBadges,
+  accounts,
+  sessions,
+  users,
+  verifications,
+} from "./database/schema.ts";
+import { osuClient } from "./osu-client.ts";
 
 const OSU_PROVIDER_ID = "osu";
 const OSU_PROFILE_URL = "https://osu.ppy.sh/api/v2/me";
 
-export const seedRanksAndBadges = async (user: Omit<AuthUser, "osuId" | "countryCode">) => {
+export const seedRanksAndBadges = async (userId: string) => {
   const osuUser = await db.query.users.findFirst({
-    where: { id: Number(user.id) },
+    where: { id: Number(userId) },
     columns: { id: true, osuId: true },
   });
 
@@ -164,7 +169,7 @@ const options = (ctx: ServerAuthContext) =>
       user: {
         create: {
           after: async (user) => {
-            await seedRanksAndBadges(user);
+            await seedRanksAndBadges(user.id);
           },
         },
       },

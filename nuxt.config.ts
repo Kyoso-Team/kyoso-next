@@ -21,6 +21,14 @@ export default defineNuxtConfig({
     typedPages: true,
     strictRouteTypes: true,
   },
+  typescript: {
+    nodeTsConfig: {
+      compilerOptions: {
+        module: "preserve",
+        moduleResolution: "bundler",
+      },
+    },
+  },
   routeRules: {
     "/tournaments/:slug/**": {
       appLayout: "tournament",
