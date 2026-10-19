@@ -123,7 +123,7 @@ const rejectStaffApplication = useMutation({
           <p class="text-muted-foreground text-xs">Decide on this application:</p>
           <div class="flex items-center gap-2">
             <Button variant="destructive" @click="rejectStaffApplication.mutate(current.id)">
-              <Icon name="lucide:x" />
+              <Icon name="fa7-solid:x" />
               Reject
             </Button>
             <AcceptRolesPopover
@@ -132,7 +132,7 @@ const rejectStaffApplication = useMutation({
               @confirm="acceptStaffApplication.mutate"
             >
               <Button>
-                <Icon name="lucide:check" />
+                <Icon name="fa7-solid:check" />
                 Accept
               </Button>
             </AcceptRolesPopover>

@@ -1,7 +1,7 @@
 import type { TournamentLink } from "~~/shared/validation/tournament/links";
 
 export const typeIconMap: Record<TournamentLink["type"], string> = {
-  "x/twitter": "fa7-brands:twitter",
+  twitter: "fa7-brands:twitter",
   discord: "fa7-brands:discord",
   youtube: "fa7-brands:youtube",
   twitch: "fa7-brands:twitch",
